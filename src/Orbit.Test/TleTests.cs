@@ -21,4 +21,18 @@ public class TleTests
         Assert.AreEqual(tle.MeanAnomaly, 110.5714m);
         Assert.AreEqual(tle.MeanMotion, 16.05824518m);
     }
+
+    [TestMethod]
+    public void TestMethod2()
+    {
+        string str1 = "SGP4 Test";
+        string str2 = "1 22824U 93061B   13001.82735048  .00001220  00000-0  51624-3 0  3663";
+        string str3 = "2 22824  98.6242 303.1417 0007629 108.0132 252.1969 14.27315768  3864";
+
+        var tle = TwoLineElement<decimal>.Parse(str1, str2, str3);
+
+        Assert.AreEqual(tle.Epoch, 13001.82735048m);
+        Assert.AreEqual(tle.BStarDrag, 0.00051624m);
+        Assert.AreEqual(tle.Inclination, 98.6242m);
+    }
 }

@@ -8,12 +8,28 @@ namespace System;
 /// <para>Seven numbers are required to define a satellite orbit. This set of seven numbers is called the satellite orbital elements, or sometimes “Keplerian” elements (after Johann Kepler [1571-1630]), or just elements. These numbers define an ellipse, orient it about the earth, and place the satellite on the ellipse at a particular time. In the Keplerian model, satellites orbit in an ellipse of constant shape and orientation. The Earth is at one focus of the ellipse, not the center (unless the orbit ellipse is actually a perfect circle).</para>
 /// <para>The real world is slightly more complex than the Keplerian model, and tracking programs compensate for this by introducing minor corrections to the Keplerian model. These corrections are known as perturbations.The perturbations that amateur tracking programs know about are due to the lumpiness of the earth’s gravitational field (which luckily you don’t have to specify), and the “drag” on the satellite due to atmosphere. Drag becomes an optional eighth orbital element.</para>
 /// </summary>
-public readonly struct TwoLineElement<T> where T : INumber<T>
+public readonly ref struct TwoLineElement<T> where T : INumber<T>
 {
+
+    public class SatelliteCatalogNumber
+    {
+        public int Year;
+        public int LaunchNumber;
+        public string Piece;
+
+        internal SatelliteCatalogNumber(int year, int launchNumber, string piece)
+        {
+            Year = year;
+            LaunchNumber = launchNumber;
+            Piece = piece;
+        }
+    }
+
     public readonly string Name;
     public readonly T NoradNumber;
+    public readonly string Classification;
     public readonly T SetNumber;
-    public readonly T InternationalDesignator;
+    public readonly SatelliteCatalogNumber InternationalDesignator;
     public readonly T Epoch;
 
     public readonly T MeanMotionFirstDerivation;
@@ -124,10 +140,11 @@ public readonly struct TwoLineElement<T> where T : INumber<T>
 
     #endregion
 
-    public TwoLineElement(string name, T noradNumber, T internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T bStarDrag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, T revolutionNumberAtEpoch)
+    public TwoLineElement(string name, string classification, T noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T bStarDrag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, T revolutionNumberAtEpoch)
     {
         Name = name;
         NoradNumber = noradNumber;
+        Classification = classification;
         SetNumber = setNumber;
         InternationalDesignator = internationalDesignator;
         Epoch = epoch;
@@ -158,14 +175,27 @@ public readonly struct TwoLineElement<T> where T : INumber<T>
     public static TwoLineElement<T> Parse(string name, string line1, string line2)
     {
         var noradNumber = ParseDecimal(line1, TLE1_COL_SATNUM, TLE1_LEN_SATNUM);
+        var classification = line1.Substring(7, 1);
 
-        var intl = line1.Substring(TLE1_COL_INTLDESC_A, TLE1_LEN_INTLDESC_A + TLE1_LEN_INTLDESC_B + TLE1_LEN_INTLDESC_C).Replace(" ", string.Empty);
+        var intlYY = line1.Substring(TLE1_COL_INTLDESC_A, TLE1_LEN_INTLDESC_A);
+        var intlLN = line1.Substring(TLE1_COL_INTLDESC_A + TLE1_LEN_INTLDESC_A, TLE1_LEN_INTLDESC_B);
+        var intlPL = line1.Substring(TLE1_COL_INTLDESC_A + TLE1_LEN_INTLDESC_A + TLE1_LEN_INTLDESC_B, TLE1_LEN_INTLDESC_C);
 
-        var internationalDesignator = T.Zero;
-        if (!string.IsNullOrWhiteSpace(intl))
+        var idYY = 0;
+        if (!string.IsNullOrWhiteSpace(intlYY))
         {
-            internationalDesignator = T.Parse(intl, null);
+            idYY = int.Parse(intlYY.Trim(), null);
         }
+        var idLN = 0;
+        if (!string.IsNullOrWhiteSpace(intlLN))
+        {
+            idLN = int.Parse(intlLN.Trim(), null);
+        }
+
+        var idPL = intlPL.Trim();
+
+        var intl = new SatelliteCatalogNumber(idYY, idLN, idPL);
+
 
         var epoch = ParseDecimal(line1, TLE1_COL_EPOCH_A, TLE1_LEN_EPOCH_A + TLE1_LEN_EPOCH_B);
 
@@ -213,7 +243,7 @@ public readonly struct TwoLineElement<T> where T : INumber<T>
 
         var RevAtEpoch = string.IsNullOrEmpty(revAtEpoch) ? T.Zero : T.Parse(revAtEpoch, null);
 
-        return new TwoLineElement<T>(name, noradNumber, internationalDesignator, epoch, MeanMotionDt, MeanMotionDt2, BStarDrag, SetNumber, Eccentricity, Inclination, Raan, ArgPerigee, MeanAnomaly, MeanMotion, RevAtEpoch);
+        return new TwoLineElement<T>(name, classification, noradNumber, intl, epoch, MeanMotionDt, MeanMotionDt2, BStarDrag, SetNumber, Eccentricity, Inclination, Raan, ArgPerigee, MeanAnomaly, MeanMotion, RevAtEpoch);
     }
 
     private static T ParseDecimal(string str, int start, int end)
