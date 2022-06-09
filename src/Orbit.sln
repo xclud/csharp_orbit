@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32519.111
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbit", "Orbit\Orbit.csproj", "{E4A57ED7-2116-4294-B83E-794A3802C6F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbit.Test", "Orbit.Test\Orbit.Test.csproj", "{E1FA0AC6-C339-431C-BD31-D02CC78EEDEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Julian", "Julian\Julian.csproj", "{8B74AB48-7B08-45C0-80FE-DB9D28B02D3B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4A57ED7-2116-4294-B83E-794A3802C6F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4A57ED7-2116-4294-B83E-794A3802C6F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4A57ED7-2116-4294-B83E-794A3802C6F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4A57ED7-2116-4294-B83E-794A3802C6F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1FA0AC6-C339-431C-BD31-D02CC78EEDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1FA0AC6-C339-431C-BD31-D02CC78EEDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1FA0AC6-C339-431C-BD31-D02CC78EEDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1FA0AC6-C339-431C-BD31-D02CC78EEDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B74AB48-7B08-45C0-80FE-DB9D28B02D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B74AB48-7B08-45C0-80FE-DB9D28B02D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B74AB48-7B08-45C0-80FE-DB9D28B02D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B74AB48-7B08-45C0-80FE-DB9D28B02D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB73826E-D11C-450E-9AE1-0646FB9AB24E}
+	EndGlobalSection
+EndGlobal

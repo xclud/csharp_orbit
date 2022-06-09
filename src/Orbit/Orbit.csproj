@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>preview</LangVersion>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>Orbit</Title>
+		<Authors>Mahdi K. Fard</Authors>
+		<Description>TLE and NORAD SGP4/SDP4/SGP8/SDP8 Implementation for .NET</Description>
+		<PackageProjectUrl></PackageProjectUrl>
+		<RepositoryUrl>https://github.com/xclud/csharp_orbit</RepositoryUrl>
+		<PackageTags>tle;orbit;NORAD;SGP4;SDP4;SGP8;SDP8;two-line-element</PackageTags>
+		<AssemblyVersion></AssemblyVersion>
+		<FileVersion></FileVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>0.0.2</Version>
+		<PackageReleaseNotes></PackageReleaseNotes>
+		<Copyright>2022 Mahdi K. Fard</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Update="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+</Project>
