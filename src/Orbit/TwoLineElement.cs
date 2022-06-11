@@ -8,9 +8,8 @@ namespace System;
 /// <para>Seven numbers are required to define a satellite orbit. This set of seven numbers is called the satellite orbital elements, or sometimes “Keplerian” elements (after Johann Kepler [1571-1630]), or just elements. These numbers define an ellipse, orient it about the earth, and place the satellite on the ellipse at a particular time. In the Keplerian model, satellites orbit in an ellipse of constant shape and orientation. The Earth is at one focus of the ellipse, not the center (unless the orbit ellipse is actually a perfect circle).</para>
 /// <para>The real world is slightly more complex than the Keplerian model, and tracking programs compensate for this by introducing minor corrections to the Keplerian model. These corrections are known as perturbations.The perturbations that amateur tracking programs know about are due to the lumpiness of the earth’s gravitational field (which luckily you don’t have to specify), and the “drag” on the satellite due to atmosphere. Drag becomes an optional eighth orbital element.</para>
 /// </summary>
-public readonly ref struct TwoLineElement<T> where T : INumber<T>
+public readonly struct TwoLineElement<T> : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {
-
     public class SatelliteCatalogNumber
     {
         public int Year;
@@ -35,7 +34,7 @@ public readonly ref struct TwoLineElement<T> where T : INumber<T>
     public readonly T MeanMotionFirstDerivation;
     public readonly T MeanMotionSecondDerivation;
 
-    public readonly T BStarDrag;
+    public readonly T Drag;
 
     /// <summary>
     /// Eccentricity in the range 0 <= e < 1.
@@ -60,7 +59,7 @@ public readonly ref struct TwoLineElement<T> where T : INumber<T>
     /// 
     /// <para>Epoch Rev is used to calculate the revolution number displayed by the tracking program.</para>
     /// </summary>
-    public readonly T RevolutionNumberAtEpoch;
+    public readonly int RevolutionNumberAtEpoch;
 
 
     /// <summary>
@@ -138,9 +137,27 @@ public readonly ref struct TwoLineElement<T> where T : INumber<T>
     private const int TLE2_COL_MEANMOTION = 52; private const int TLE2_LEN_MEANMOTION = 11;
     private const int TLE2_COL_REVATEPOCH = 63; private const int TLE2_LEN_REVATEPOCH = 5;
 
+    T IKeplerianElements<T>.Epoch => Epoch;
+
+    T IKeplerianElements<T>.Eccentricity => Eccentricity;
+
+    T IKeplerianElements<T>.MeanMotion => MeanMotion;
+
+    int IKeplerianElements<T>.RevolutionNumberAtEpoch => RevolutionNumberAtEpoch;
+
+    T IKeplerianElements<T>.Inclination => Inclination;
+
+    T IKeplerianElements<T>.RightAscensionOfAscendingNode => RightAscensionOfAscendingNode;
+
+    T IKeplerianElements<T>.MeanAnomaly => MeanAnomaly;
+
+    T IKeplerianElements<T>.ArgumentOfPeriapsis => ArgumentOfPeriapsis;
+
+    T IKeplerianElements<T>.Drag => Drag;
+
     #endregion
 
-    public TwoLineElement(string name, string classification, T noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T bStarDrag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, T revolutionNumberAtEpoch)
+    public TwoLineElement(string name, string classification, T noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T drag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, int revolutionNumberAtEpoch)
     {
         Name = name;
         NoradNumber = noradNumber;
@@ -150,7 +167,7 @@ public readonly ref struct TwoLineElement<T> where T : INumber<T>
         Epoch = epoch;
         MeanMotionFirstDerivation = meanMotionFirstDerivation;
         MeanMotionSecondDerivation = meanMotionSecondDerivation;
-        BStarDrag = bStarDrag;
+        Drag = drag;
         Eccentricity = eccentricity;
         RightAscensionOfAscendingNode = rightAscensionOfAscendingNode;
         ArgumentOfPeriapsis = argumentOfPeriapsis;
@@ -241,7 +258,7 @@ public readonly ref struct TwoLineElement<T> where T : INumber<T>
 
         var revAtEpoch = line2.Substring(TLE2_COL_REVATEPOCH, TLE2_LEN_REVATEPOCH).TrimStart();
 
-        var RevAtEpoch = string.IsNullOrEmpty(revAtEpoch) ? T.Zero : T.Parse(revAtEpoch, null);
+        var RevAtEpoch = string.IsNullOrEmpty(revAtEpoch) ? 0 : int.Parse(revAtEpoch, null);
 
         return new TwoLineElement<T>(name, classification, noradNumber, intl, epoch, MeanMotionDt, MeanMotionDt2, BStarDrag, SetNumber, Eccentricity, Inclination, Raan, ArgPerigee, MeanAnomaly, MeanMotion, RevAtEpoch);
     }
@@ -276,7 +293,7 @@ public readonly ref struct TwoLineElement<T> where T : INumber<T>
         const int COL_EXPONENT = 6;
         const int LEN_EXPONENT = 2;
 
-        string sign = str.Substring(COL_SIGN, LEN_SIGN);
+        string sign = str[..LEN_SIGN];
         string mantissa = str.Substring(COL_MANTISSA, LEN_MANTISSA);
         string exponent = str.Substring(COL_EXPONENT, LEN_EXPONENT).TrimStart();
 

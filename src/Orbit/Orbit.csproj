@@ -14,11 +14,11 @@
 		<Description>TLE and NORAD SGP4/SDP4/SGP8/SDP8 Implementation for .NET</Description>
 		<PackageProjectUrl></PackageProjectUrl>
 		<RepositoryUrl>https://github.com/xclud/csharp_orbit</RepositoryUrl>
-		<PackageTags>tle;orbit;NORAD;SGP4;SDP4;SGP8;SDP8;two-line-element</PackageTags>
+		<PackageTags>tle;satellite;orbit;norad;sgp4;sdp4;sgp8;sdp8;two-line-element</PackageTags>
 		<AssemblyVersion></AssemblyVersion>
 		<FileVersion></FileVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>0.0.3</Version>
+		<Version>0.0.5</Version>
 		<Copyright>2022 Mahdi K. Fard</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>

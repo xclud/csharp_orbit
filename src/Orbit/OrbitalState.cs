@@ -7,19 +7,14 @@ namespace System;
 /// 
 /// <seealso cref="https://en.wikipedia.org/wiki/Orbital_state_vectors"/>
 /// </summary>
-public ref struct OrbitalStateVectors
+public ref struct OrbitalState<T> where T : INumber<T>, IFloatingPoint<T>
 {
-    public readonly Vector3 Position;
-    public readonly Vector3 Velocity;
+    public readonly Vector4<T> Position;
+    public readonly Vector4<T> Velocity;
 
-    private OrbitalStateVectors(Vector3 position, Vector3 velocity)
+    public OrbitalState(Vector4<T> position, Vector4<T> velocity)
     {
         Position = position;
         Velocity = velocity;
-    }
-
-    internal static OrbitalStateVectors Create(Vector3 position, Vector3 velocity)
-    {
-        return new OrbitalStateVectors(position, velocity);
     }
 }
