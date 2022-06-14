@@ -13,4 +13,14 @@ public interface IPlanet
     double J4 { get; }
     double Flattening { get; }
     double B { get; }
+
+    public static Orbit operator &(IKeplerianElements<double> keplerianElements, IPlanet planet)
+    {
+        return new Orbit(keplerianElements, planet);
+    }
+
+    public static Orbit operator &(IPlanet planet, IKeplerianElements<double> keplerianElements)
+    {
+        return new Orbit(keplerianElements, planet);
+    }
 }

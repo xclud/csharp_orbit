@@ -6,7 +6,7 @@ namespace System;
 /// set and provides information regarding the satellite's orbit 
 /// such as period, axis length, ECI coordinates, velocity, etc.
 /// </summary>
-public class Orbit
+public sealed class Orbit
 {
     public readonly TimeSpan Period;
 
@@ -61,7 +61,6 @@ public class Orbit
 
     #endregion
 
-    #region Construction
 
     /// <summary>
     /// Standard constructor.
@@ -141,22 +140,19 @@ public class Orbit
         }
     }
 
-    #endregion
-
-    #region Position
 
     /// <summary>
     /// Calculate satellite ECI position/velocity for a given time.
     /// </summary>
     /// <param name="minutes">Target time, in minutes past the Keplerian epoch.</param>
     /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
-    public OrbitalState<double> PositionEci(double minutes)
+    public OrbitalState<double> GetOrbitalState(double minutes)
     {
         var eci = NoradModel.GetPosition(minutes);
 
         // Convert ECI vector units from AU to kilometers
         double radiusAe = Planet.Radius / Globals.Ae;  // km
-        var velocityScale = radiusAe * (Globals.MinPerDay / 86400);// km/sec
+        var velocityScale = radiusAe * (Globals.MinPerDay / 86400.0);// km/sec
 
         eci = new OrbitalState<double>(eci.Position * radiusAe, eci.Velocity * velocityScale);
         return eci;
@@ -167,12 +163,12 @@ public class Orbit
     /// </summary>
     /// <param name="utc">Target time (UTC).</param>
     /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
-    public OrbitalState<double> PositionEci(DateTime utc)
+    public OrbitalState<double> GetOrbitalState(DateTime utc)
     {
-        return PositionEci(TPlusEpoch(utc).TotalMinutes);
+        return GetOrbitalState(TPlusEpoch(utc).TotalMinutes);
     }
 
-    #endregion
+
 
     // ///////////////////////////////////////////////////////////////////////////
     // Returns elapsed time from epoch to given time.
@@ -185,7 +181,7 @@ public class Orbit
     #region Utility
 
     // ///////////////////////////////////////////////////////////////////
-    protected double GetRad(double v)
+    private static double GetRad(double v)
     {
         return Globals.ToRadians(v);
     }

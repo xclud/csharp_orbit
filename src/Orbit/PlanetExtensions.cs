@@ -67,7 +67,7 @@ public static class PlanetExtensions
     /// Reference: The 1992 Astronomical Almanac, page K11
     /// Reference: www.celestrak.com (Dr. T.S. Kelso)
     /// </remarks>
-    internal static OrbitalState<double> CalculateOrbitalState(this IPlanet planet, Geocentric<double> geocentric, Julian date)
+    internal static OrbitalState<double> GetOrbitalState(this IPlanet planet, Geocentric<double> geocentric, Julian date)
     {
         double lat = geocentric.Latitude;
         double lon = geocentric.Longitude;
@@ -105,9 +105,9 @@ public static class PlanetExtensions
         return new OrbitalState<double>(position, velocity);
     }
 
-    public static OrbitalState<double> CalculateOrbitalState(this IPlanet planet, Geocentric<double> geocentric, DateTime date)
+    public static OrbitalState<double> GetOrbitalState(this IPlanet planet, Geocentric<double> geocentric, DateTime utc)
     {
-        return CalculateOrbitalState(planet, geocentric, new Julian(date));
+        return GetOrbitalState(planet, geocentric, new Julian(utc));
     }
 
     /// <summary>
@@ -116,9 +116,14 @@ public static class PlanetExtensions
     /// </summary>
     /// <param name="satellite">The ECI coordinates of the target object.</param>
     /// <returns>The look angle to the target object.</returns>
-    public static Topocentric<double> GetLookAngle(this IPlanet planet, Geocentric<double> observer, OrbitalState<double> satellite, DateTime date)
+    public static Topocentric<double> GetLookAngle(this IPlanet planet, Geocentric<double> observer, OrbitalState<double> satellite, DateTime utc)
     {
-        return GetLookAngle(planet, observer, satellite, new Julian(date));
+        return GetLookAngle(planet, observer, satellite, new Julian(utc));
+    }
+
+    public static Topocentric<double> GetLookAngle(this IPlanet planet, Geocentric<double> observer, Orbit satellite, DateTime utc)
+    {
+        return GetLookAngle(planet, observer, satellite.GetOrbitalState(utc), new Julian(utc));
     }
     /// <summary>
     /// Returns the topo-centric (azimuth, elevation, etc.) coordinates for
@@ -130,7 +135,7 @@ public static class PlanetExtensions
     {
         // Calculate the ECI coordinates for this Site object at the time
         // of interest.
-        var eciSite = planet.CalculateOrbitalState(observer, date);
+        var eciSite = planet.GetOrbitalState(observer, date);
         var vecRgRate = new Vector4<double>(satellite.Velocity.X - eciSite.Velocity.X,
                                       satellite.Velocity.Y - eciSite.Velocity.Y,
                                       satellite.Velocity.Z - eciSite.Velocity.Z, 1);
