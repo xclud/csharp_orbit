@@ -3,7 +3,7 @@
 /// <summary>
 /// Encapsulates topo-centric coordinates.
 /// </summary>
-public readonly ref struct Topocentric<T>
+public sealed class Topocentric<T>
 {
     /// <summary>
     /// Creates a new instance of the class from the given components.

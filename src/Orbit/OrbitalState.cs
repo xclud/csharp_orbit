@@ -7,7 +7,7 @@ namespace System;
 /// 
 /// <seealso cref="https://en.wikipedia.org/wiki/Orbital_state_vectors"/>
 /// </summary>
-public ref struct OrbitalState<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class OrbitalState<T> where T : INumber<T>, IFloatingPoint<T>
 {
     public readonly Vector4<T> Position;
     public readonly Vector4<T> Velocity;

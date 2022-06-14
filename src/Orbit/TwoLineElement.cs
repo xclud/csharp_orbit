@@ -8,13 +8,13 @@ namespace System;
 /// <para>Seven numbers are required to define a satellite orbit. This set of seven numbers is called the satellite orbital elements, or sometimes “Keplerian” elements (after Johann Kepler [1571-1630]), or just elements. These numbers define an ellipse, orient it about the earth, and place the satellite on the ellipse at a particular time. In the Keplerian model, satellites orbit in an ellipse of constant shape and orientation. The Earth is at one focus of the ellipse, not the center (unless the orbit ellipse is actually a perfect circle).</para>
 /// <para>The real world is slightly more complex than the Keplerian model, and tracking programs compensate for this by introducing minor corrections to the Keplerian model. These corrections are known as perturbations.The perturbations that amateur tracking programs know about are due to the lumpiness of the earth’s gravitational field (which luckily you don’t have to specify), and the “drag” on the satellite due to atmosphere. Drag becomes an optional eighth orbital element.</para>
 /// </summary>
-public readonly struct TwoLineElement<T> : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {
-    public class SatelliteCatalogNumber
+    public sealed class SatelliteCatalogNumber
     {
-        public int Year;
-        public int LaunchNumber;
-        public string Piece;
+        public readonly int Year;
+        public readonly int LaunchNumber;
+        public readonly string Piece;
 
         internal SatelliteCatalogNumber(int year, int launchNumber, string piece)
         {
@@ -33,7 +33,6 @@ public readonly struct TwoLineElement<T> : IKeplerianElements<T> where T : INumb
 
     public readonly T MeanMotionFirstDerivation;
     public readonly T MeanMotionSecondDerivation;
-
     public readonly T Drag;
 
     /// <summary>
