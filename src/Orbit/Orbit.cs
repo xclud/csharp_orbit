@@ -40,7 +40,7 @@ public sealed class Orbit
     internal Julian EpochJ { get; private set; }
     public DateTime Epoch => EpochJ.ToTime();
 
-    private NoradBase NoradModel { get; set; }
+    private ICartesianElements NoradModel { get; set; }
 
     // "Recovered" from the input elements
     public double SemiMajor => m_aeAxisSemiMajorRec;
@@ -136,7 +136,7 @@ public sealed class Orbit
         else
         {
             // SGP4 - period < 225 minutes
-            NoradModel = new NoradSGP4(this);
+            NoradModel = new SGP4(this.KeplerianElements, this.Planet);
         }
     }
 
@@ -146,15 +146,18 @@ public sealed class Orbit
     /// </summary>
     /// <param name="minutes">Target time, in minutes past the Keplerian epoch.</param>
     /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
-    public OrbitalState<double> GetOrbitalState(double minutes)
+    public OrbitalState<double> GetPosition(double minutes)
     {
         var eci = NoradModel.GetPosition(minutes);
 
-        // Convert ECI vector units from AU to kilometers
-        double radiusAe = Planet.Radius / Globals.Ae;  // km
-        var velocityScale = radiusAe * (Globals.MinPerDay / 86400.0);// km/sec
+        if (NoradModel is not SGP4)
+        {
+            // Convert ECI vector units from AU to kilometers
+            double radiusAe = Planet.Radius / Globals.Ae;  // km
+            var velocityScale = radiusAe * (Globals.MinPerDay / 86400.0);// km/sec
 
-        eci = new OrbitalState<double>(eci.Position * radiusAe, eci.Velocity * velocityScale);
+            eci = new OrbitalState<double>(eci.Position * radiusAe, eci.Velocity * velocityScale);
+        }
         return eci;
     }
 
@@ -165,7 +168,7 @@ public sealed class Orbit
     /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
     public OrbitalState<double> GetOrbitalState(DateTime utc)
     {
-        return GetOrbitalState(TPlusEpoch(utc).TotalMinutes);
+        return GetPosition(TPlusEpoch(utc).TotalMinutes);
     }
 
 

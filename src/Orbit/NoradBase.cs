@@ -3,7 +3,7 @@ namespace System;
 /// <summary>
 /// This class provides a base class for the NORAD SGP4/SDP4 orbit models.
 /// </summary>
-internal abstract class NoradBase
+internal abstract class NoradBase : ICartesianElements
 {
     #region Properties
 
@@ -163,10 +163,10 @@ internal abstract class NoradBase
     // /////////////////////////////////////////////////////////////////////
     internal OrbitalState<double> FinalPosition(double incl, double omega, double e, double a, double xl, double xnode, double xn, double tsince)
     {
-        if ((e * e) > 1.0)
-        {
-            throw new PropagationException("Error in satellite data.");
-        }
+        //if ((e * e) > 1.0)
+        //{
+        //    throw new PropagationException("Error in satellite data.");
+        //}
 
         var Ck2 = Planet.J2 / 2.0;
         var Xj3 = Planet.J3;

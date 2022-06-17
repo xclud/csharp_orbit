@@ -1,4 +1,10 @@
-﻿string str1 = "SGP4 Test";
+﻿var tlex = TwoLineElement<double>.Parse("", "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0    8", "2 88888  72.8435 115.9689 0086731  52.6988 110.5714 16.05824518  105");
+
+var sgp = new SGP4(tlex, Earth.WGS84);
+
+//sgp.GetPosition(0);
+
+string str1 = "SGP4 Test";
 string str2 = "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0     8";
 string str3 = "2 88888  72.8435 115.9689 0086731  52.6988 110.5714 16.05824518   105";
 
@@ -23,15 +29,15 @@ Console.WriteLine("\nExample output:");
 // to the SDP4 satellite defined above.
 
 // Create an orbit object using the SDP4 TLE object.
-var satellite = tle2 & Earth.WGS72;
-//var satellite = new Orbit(tle2, Earth.WGS72);
+var satellite = tlex & Earth.WGS84;
+//var satellite = new Orbit(tle2, Earth.WGS84);
 
 // Get the location of the satellite from the Orbit object. The 
 // earth-centered inertial information is placed into eciSDP4.
 // Here we ask for the location of the satellite 90 minutes after
 // the TLE epoch.
 
-var when = satellite.Epoch.AddMinutes(90);
+var when = satellite.Epoch.AddDays(900);
 
 // Now create a site object. Site objects represent a location on the 
 // surface of the earth. Here we arbitrarily select a point on the
@@ -61,7 +67,7 @@ void PrintPosVel(IKeplerianElements<double> tle)
     {
         // Get the position of the satellite at time "mpe".
         // The coordinates are placed into the variable "eci".
-        var eci = sat.GetOrbitalState(mpe);
+        var eci = sat.GetPosition(mpe);
 
         // Add the coordinate object to the list
         coords.Add(eci);

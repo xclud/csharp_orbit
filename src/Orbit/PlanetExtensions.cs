@@ -2,61 +2,6 @@
 
 public static class PlanetExtensions
 {
-
-    ///// <summary>
-    ///// Creates a new instance of the class given ECI coordinates.
-    ///// </summary>
-    ///// <param name="eci">The ECI coordinates.</param>
-    ///// <param name="date">The Julian date.</param>
-    //public static Geocentric FromEciAndDate(this IPlanet planet, Eci eci, Julian date)
-    //{
-    //    return FromPositionAndLongitude(planet, eci.Position, (AcTan(eci.Position.Y, eci.Position.X) - date.ToGmst()) % (2 * Math.PI));
-    //}
-
-    ///// <summary>
-    ///// Creates a new instance of the class given XYZ coordinates.
-    ///// </summary>
-    //public static Geocentric FromPositionAndLongitude(this IPlanet planet, Vector position, double longitude)
-    //{
-    //    longitude %= Math.PI * 2;
-
-    //    if (longitude < 0.0)
-    //    {
-    //        // "wrap" negative modulo
-    //        longitude += Math.PI * 2;
-    //    }
-
-    //    var f = planet.Flattening;
-
-    //    double r = Math.Sqrt((position.X * position.X) + (position.Y * position.Y));
-    //    double e2 = f * (2.0 - f);
-    //    double latitude = AcTan(position.Z, r);
-
-    //    const double DELTA = 1.0e-07;
-    //    double phi;
-    //    double c;
-
-    //    do
-    //    {
-
-    //        phi = latitude;
-    //        var sinphi = Math.Sin(phi);
-    //        c = 1.0 / Math.Sqrt(1.0 - (e2 * (sinphi * sinphi)));
-    //        latitude = AcTan(position.Z + (planet.Radius * c * e2 * Math.Sin(phi)), r);
-    //    }
-    //    while (Math.Abs(latitude - phi) > DELTA);
-
-    //    var alt = (r / Math.Cos(latitude)) - (planet.Radius * c);
-
-    //    return new Geocentric(latitude, longitude, alt);
-    //}
-
-    //private static double AcTan(double sinx, double cosx)
-    //{
-    //    double ret = cosx == 0.0 ? sinx > 0.0 ? Math.PI / 2.0 : 3.0 * Math.PI / 2.0 : cosx > 0.0 ? Math.Atan(sinx / cosx) : Math.PI + Math.Atan(sinx / cosx);
-    //    return ret;
-    //}
-
     /// <summary>
     /// Creates a instance of the class from geodetic coordinates.
     /// </summary>
@@ -201,5 +146,13 @@ public static class PlanetExtensions
   }
 #endif
         return topo;
+    }
+
+    internal static double xke(this IPlanet p)
+    {
+        var earthRadius = p.Radius;
+        var mu = p.Mu;
+
+        return 60.0 / Math.Sqrt(earthRadius * earthRadius * earthRadius / mu);
     }
 }
