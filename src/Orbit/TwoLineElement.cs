@@ -25,7 +25,7 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
     }
 
     public readonly string Name;
-    public readonly T NoradNumber;
+    public readonly int Id;
     public readonly string Classification;
     public readonly T SetNumber;
     public readonly SatelliteCatalogNumber InternationalDesignator;
@@ -156,10 +156,10 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
     #endregion
 
-    public TwoLineElement(string name, string classification, T noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T drag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, int revolutionNumberAtEpoch)
+    public TwoLineElement(string name, string classification, int noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T drag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, int revolutionNumberAtEpoch)
     {
         Name = name;
-        NoradNumber = noradNumber;
+        Id = noradNumber;
         Classification = classification;
         SetNumber = setNumber;
         InternationalDesignator = internationalDesignator;
@@ -190,7 +190,7 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
     public static TwoLineElement<T> Parse(string name, string line1, string line2)
     {
-        var noradNumber = ParseDecimal(line1, TLE1_COL_SATNUM, TLE1_LEN_SATNUM);
+        var noradNumber = ParseInt(line1, TLE1_COL_SATNUM, TLE1_LEN_SATNUM);
         var classification = line1.Substring(7, 1);
 
         var intlYY = line1.Substring(TLE1_COL_INTLDESC_A, TLE1_LEN_INTLDESC_A);
@@ -267,6 +267,13 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
         var sub = str.Substring(start, end);
 
         return T.Parse(sub, null);
+    }
+
+    private static int ParseInt(string str, int start, int end)
+    {
+        var sub = str.Substring(start, end);
+
+        return int.Parse(sub, null);
     }
 
     /// <summary>
