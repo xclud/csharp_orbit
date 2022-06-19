@@ -1119,8 +1119,8 @@ public sealed class SGP4 : ICartesianElements
         var vz = sini * cossu;
 
         // --------- position and velocity (in km and km/sec) ----------
-        var r = new Vector4<double>(mrt * ux * earthRadius, mrt * uy * earthRadius, mrt * uz * earthRadius, 0);
-        var v = new Vector4<double>(((mvt * ux) + (rvdot * vx)) * vkmpersec, ((mvt * uy) + (rvdot * vy)) * vkmpersec, ((mvt * uz) + (rvdot * vz)) * vkmpersec, w: 0);
+        var r = new EarthCenteredInertial<double>(mrt * ux * earthRadius, mrt * uy * earthRadius, mrt * uz * earthRadius);
+        var v = new EarthCenteredInertial<double>(((mvt * ux) + (rvdot * vx)) * vkmpersec, ((mvt * uy) + (rvdot * vy)) * vkmpersec, ((mvt * uz) + (rvdot * vz)) * vkmpersec);
 
         return new OrbitalState<double>(r, v);
     }

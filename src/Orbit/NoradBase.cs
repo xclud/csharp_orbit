@@ -269,7 +269,7 @@ internal abstract class NoradBase : ICartesianElements
         double y = rk * uy;
         double z = rk * uz;
 
-        var vecPos = new Vector4<double>(x, y, z, 0);
+        var vecPos = new EarthCenteredInertial<double>(x, y, z);
         var gmt = new Julian(Orbit.EpochJ);
 
         gmt.AddMin(tsince);
@@ -287,7 +287,7 @@ internal abstract class NoradBase : ICartesianElements
         double ydot = (rdotk * uy) + (rfdotk * vy);
         double zdot = (rdotk * uz) + (rfdotk * vz);
 
-        var vecVel = new Vector4<double>(xdot, ydot, zdot, 1);
+        var vecVel = new EarthCenteredInertial<double>(xdot, ydot, zdot);
 
         return new OrbitalState<double>(vecPos, vecVel);
     }

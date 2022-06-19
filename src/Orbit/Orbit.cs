@@ -150,14 +150,14 @@ public sealed class Orbit
     {
         var eci = NoradModel.GetPosition(minutes);
 
-        if (NoradModel is not SGP4)
-        {
-            // Convert ECI vector units from AU to kilometers
-            double radiusAe = Planet.Radius / Globals.Ae;  // km
-            var velocityScale = radiusAe * (Globals.MinPerDay / 86400.0);// km/sec
+        //if (NoradModel is not SGP4)
+        //{
+        //    // Convert ECI vector units from AU to kilometers
+        //    double radiusAe = Planet.Radius / Globals.Ae;  // km
+        //    var velocityScale = radiusAe * (Globals.MinPerDay / 86400.0);// km/sec
 
-            eci = new OrbitalState<double>(eci.Position * radiusAe, eci.Velocity * velocityScale);
-        }
+        //    eci = new OrbitalState<double>(eci.Position * radiusAe, eci.Velocity * velocityScale);
+        //}
         return eci;
     }
 
@@ -166,7 +166,7 @@ public sealed class Orbit
     /// </summary>
     /// <param name="utc">Target time (UTC).</param>
     /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
-    public OrbitalState<double> GetOrbitalState(DateTime utc)
+    public OrbitalState<double> GetPosition(DateTime utc)
     {
         return GetPosition(TPlusEpoch(utc).TotalMinutes);
     }

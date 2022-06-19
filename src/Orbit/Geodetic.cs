@@ -5,7 +5,7 @@ namespace System;
 /// <summary>
 /// Encapsulates geocentric coordinates.
 /// </summary>
-public sealed class Geocentric<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class Geodetic<T> where T : INumber<T>, IFloatingPoint<T>
 {
     /// <summary>
     /// Creates a new instance of the class with the given components.
@@ -14,7 +14,7 @@ public sealed class Geocentric<T> where T : INumber<T>, IFloatingPoint<T>
     /// <param name="longitude">Longitude, in radians. Negative value indicate longitude
     /// west.</param>
     /// <param name="altitude">Altitude above the ellipsoid model, in kilometers.</param>
-    public Geocentric(T latitude, T longitude, T altitude)
+    public Geodetic(T latitude, T longitude, T altitude)
     {
         Latitude = latitude;
         Longitude = longitude;
@@ -25,7 +25,7 @@ public sealed class Geocentric<T> where T : INumber<T>, IFloatingPoint<T>
     /// Creates a Geo object from a source Geo object.
     /// </summary>
     /// <param name="geo">The source Geo object.</param>
-    public Geocentric(Geocentric<T> geo)
+    public Geodetic(Geodetic<T> geo)
     {
         Latitude = geo.Latitude;
         Longitude = geo.Longitude;
@@ -66,7 +66,7 @@ public sealed class Geocentric<T> where T : INumber<T>, IFloatingPoint<T>
         var u = latNorth ? 'N' : 'S';
         var v = lonEast ? 'E' : 'W';
 
-        string str = $"{Math.Abs(lat):00.0}{u} {Math.Abs(lng):000.0}{v} {alt:F0}m";
+        string str = $"{Math.Abs(lat):00.0} {u}, {Math.Abs(lng):000.0} {v}, {alt/1000.0:F3} km";
 
         return str;
     }

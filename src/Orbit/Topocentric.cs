@@ -1,44 +1,18 @@
-﻿namespace System;
+﻿using System.Numerics;
 
-/// <summary>
-/// Encapsulates topo-centric coordinates.
-/// </summary>
-public sealed class Topocentric<T>
+namespace System;
+
+
+public sealed class Topocentric<T> where T : INumber<T>, IFloatingPoint<T>
 {
-    /// <summary>
-    /// Creates a new instance of the class from the given components.
-    /// </summary>
-    /// <param name="azimuth">Azimuth, in radians.</param>
-    /// <param name="elevation">Elevation, in radians.</param>
-    /// <param name="range">Range, in kilometers.</param>
-    /// <param name="rate">Range rate, in kilometers per second. A negative
-    /// range rate means "towards the observer".</param>
-    public Topocentric(T azimuth, T elevation, T range, T rate)
+    public Topocentric(T south, T east, T normal)
     {
-        Azimuth = azimuth;
-        Elevation = elevation;
-        Range = range;
-        Rate = rate;
+        this.South = south;
+        this.East = east;
+        this.Normal = normal;
     }
 
-    /// <summary>
-    /// The azimuth, in radians.
-    /// </summary>
-    public readonly T Azimuth;
-
-    /// <summary>
-    /// The elevation, in radians.
-    /// </summary>
-    public readonly T Elevation;
-
-    /// <summary>
-    /// The range, in kilometers.
-    /// </summary>
-    public readonly T Range;
-
-    /// <summary>
-    /// The range rate, in kilometers per second. 
-    /// A negative value means "towards observer".
-    /// </summary>
-    public readonly T Rate;
+    public readonly T South;
+    public readonly T East;
+    public readonly T Normal;
 }

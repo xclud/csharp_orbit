@@ -9,10 +9,10 @@ namespace System;
 /// </summary>
 public sealed class OrbitalState<T> where T : INumber<T>, IFloatingPoint<T>
 {
-    public readonly Vector4<T> Position;
-    public readonly Vector4<T> Velocity;
+    public readonly EarthCenteredInertial<T> Position;
+    public readonly EarthCenteredInertial<T> Velocity;
 
-    public OrbitalState(Vector4<T> position, Vector4<T> velocity)
+    public OrbitalState(EarthCenteredInertial<T> position, EarthCenteredInertial<T> velocity)
     {
         Position = position;
         Velocity = velocity;

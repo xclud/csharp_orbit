@@ -1,8 +1,16 @@
-﻿var tlex = TwoLineElement<double>.Parse("", "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0    8", "2 88888  72.8435 115.9689 0086731  52.6988 110.5714 16.05824518  105");
+﻿var a1 = "OSCAR 7 (AO-7)";
+var a2 = "1 07530U 74089B   13001.41953037  .00000001  00000-0  27778-3 0  5711";
+var a3 = "2 07530 101.4185 357.0759 0011588 254.1624 275.4154 12.53593399744888";
 
-var sgp = new SGP4(tlex, Earth.WGS84);
+var tlex = TwoLineElement<double>.Parse(a1, a2, a3);
 
-//sgp.GetPosition(0);
+var sgp = new Orbit(tlex, Earth.WGS84);
+
+var now = DateTime.UtcNow;
+
+var rv = sgp.GetPosition(now);
+var g0 = Earth.WGS84.GetGeocentric(rv.Position, now);
+var g1 = Earth.WGS84.GetGeocentric(rv.Position, now.AddMinutes(10));
 
 string str1 = "SGP4 Test";
 string str2 = "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0     8";
@@ -43,15 +51,23 @@ var when = satellite.Epoch.AddDays(900);
 // surface of the earth. Here we arbitrarily select a point on the
 // equator.
 // 0.00 N, 100.00 W, 0 km altitude
-var observer = new Geocentric<double>(0.0, -100.0 / 180.0 * Math.PI, 0);
+var observer = new Geodetic<double>(0.0, -100.0 / 180.0 * Math.PI, 0);
+var eci = satellite.GetPosition(now);
+var ll = Earth.WGS84.GetLookAngle(observer, eci.Position, now);
+
 
 // Now get the "look angle" from the site to the satellite. 
-var topoLook = Earth.WGS72.GetLookAngle(observer, satellite, when);
+var nn = Earth.WGS84.GetLookAngle(observer, satellite, now);
+var topoLook = Earth.WGS84.GetLookAngle(observer, satellite, when);
+var topoLook1 = Earth.WGS84.GetLookAngle(observer, satellite, when.AddMinutes(-5));
+var topoLook2 = Earth.WGS84.GetLookAngle(observer, satellite, when.AddMinutes(5));
 
 // Print out the results. Note that the Azimuth and Elevation are
 // stored in the Topocentric object as radians. Here we convert
 // to degrees using 180 / Math.PI.
-Console.Write($"AZ: {topoLook.Azimuth * 180 / Math.PI:f3}  EL: {topoLook.Elevation * 180 / Math.PI:f3}");
+Console.WriteLine($"AZ: {topoLook1.Azimuth * 180 / Math.PI:f3}  EL: {topoLook1.Elevation * 180 / Math.PI:f3}");
+Console.WriteLine($"AZ: {topoLook.Azimuth * 180 / Math.PI:f3}  EL: {topoLook.Elevation * 180 / Math.PI:f3}");
+Console.WriteLine($"AZ: {topoLook2.Azimuth * 180 / Math.PI:f3}  EL: {topoLook2.Elevation * 180 / Math.PI:f3}");
 
 
 void PrintPosVel(IKeplerianElements<double> tle)
