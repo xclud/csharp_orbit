@@ -1125,6 +1125,12 @@ public sealed class SGP4 : ICartesianElements
         return new OrbitalState<double>(r, v);
     }
 
+    public OrbitalState<double> GetPosition(DateTime utc)
+    {
+        var tsince = keplerianElements.GetMinutesPastEpoch(utc);
+
+        return GetPosition(tsince);
+    }
 
     /*-----------------------------------------------------------------------------
     *

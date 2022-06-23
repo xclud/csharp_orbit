@@ -4,13 +4,12 @@ var a3 = "2 07530 101.4185 357.0759 0011588 254.1624 275.4154 12.53593399744888"
 
 var tlex = TwoLineElement<double>.Parse(a1, a2, a3);
 
-var sgp = new Orbit(tlex, Earth.WGS84);
+var sgp = new SGP4(tlex, Earth.WGS84);
 
 var now = DateTime.UtcNow;
 
 var rv = sgp.GetPosition(now);
-var g0 = Earth.WGS84.GetGeocentric(rv.Position, now);
-var g1 = Earth.WGS84.GetGeocentric(rv.Position, now.AddMinutes(10));
+
 
 string str1 = "SGP4 Test";
 string str2 = "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0     8";
@@ -36,38 +35,33 @@ Console.WriteLine("\nExample output:");
 // Example: Define a location on the earth, then determine the look-angle
 // to the SDP4 satellite defined above.
 
-// Create an orbit object using the SDP4 TLE object.
-var satellite = tlex & Earth.WGS84;
-//var satellite = new Orbit(tle2, Earth.WGS84);
-
 // Get the location of the satellite from the Orbit object. The 
 // earth-centered inertial information is placed into eciSDP4.
 // Here we ask for the location of the satellite 90 minutes after
 // the TLE epoch.
 
-var when = satellite.Epoch.AddDays(900);
 
 // Now create a site object. Site objects represent a location on the 
 // surface of the earth. Here we arbitrarily select a point on the
 // equator.
 // 0.00 N, 100.00 W, 0 km altitude
 var observer = new Geodetic<double>(0.0, -100.0 / 180.0 * Math.PI, 0);
-var eci = satellite.GetPosition(now);
+var eci = sgp.GetPosition(now);
 var ll = Earth.WGS84.GetLookAngle(observer, eci.Position, now);
 
+//var when = satellite.Epoch.AddDays(900);
+//// Now get the "look angle" from the site to the satellite. 
+//var nn = Earth.WGS84.GetLookAngle(observer, satellite, now);
+//var topoLook = Earth.WGS84.GetLookAngle(observer, satellite, when);
+//var topoLook1 = Earth.WGS84.GetLookAngle(observer, satellite, when.AddMinutes(-5));
+//var topoLook2 = Earth.WGS84.GetLookAngle(observer, satellite, when.AddMinutes(5));
 
-// Now get the "look angle" from the site to the satellite. 
-var nn = Earth.WGS84.GetLookAngle(observer, satellite, now);
-var topoLook = Earth.WGS84.GetLookAngle(observer, satellite, when);
-var topoLook1 = Earth.WGS84.GetLookAngle(observer, satellite, when.AddMinutes(-5));
-var topoLook2 = Earth.WGS84.GetLookAngle(observer, satellite, when.AddMinutes(5));
-
-// Print out the results. Note that the Azimuth and Elevation are
-// stored in the Topocentric object as radians. Here we convert
-// to degrees using 180 / Math.PI.
-Console.WriteLine($"AZ: {topoLook1.Azimuth * 180 / Math.PI:f3}  EL: {topoLook1.Elevation * 180 / Math.PI:f3}");
-Console.WriteLine($"AZ: {topoLook.Azimuth * 180 / Math.PI:f3}  EL: {topoLook.Elevation * 180 / Math.PI:f3}");
-Console.WriteLine($"AZ: {topoLook2.Azimuth * 180 / Math.PI:f3}  EL: {topoLook2.Elevation * 180 / Math.PI:f3}");
+//// Print out the results. Note that the Azimuth and Elevation are
+//// stored in the Topocentric object as radians. Here we convert
+//// to degrees using 180 / Math.PI.
+//Console.WriteLine($"AZ: {topoLook1.Azimuth * 180 / Math.PI:f3}  EL: {topoLook1.Elevation * 180 / Math.PI:f3}");
+//Console.WriteLine($"AZ: {topoLook.Azimuth * 180 / Math.PI:f3}  EL: {topoLook.Elevation * 180 / Math.PI:f3}");
+//Console.WriteLine($"AZ: {topoLook2.Azimuth * 180 / Math.PI:f3}  EL: {topoLook2.Elevation * 180 / Math.PI:f3}");
 
 
 void PrintPosVel(IKeplerianElements<double> tle)

@@ -11,6 +11,19 @@ public static class ExtensionMethods
     private const double twoPi = Math.PI * 2;
     private const double pi = Math.PI;
 
+    public static double GetMinutesPastEpoch(this IKeplerianElements<double> elem, DateTime utc)
+    {
+        var year = (int)(elem.Epoch / 1000.0);
+        var doy = elem.Epoch - (year * 1000.0);
+
+        year += year > 57 ? 1900 : 2000;
+        var EpochJ = new Julian(year, doy);
+        var epoch = EpochJ.ToTime();
+
+        return (utc - epoch).TotalMinutes;
+    }
+
+
     public static EarthCenteredInertial<double> ToEci(this EarthCenteredEarthFixed<double> ecf, double gmst)
     {
         // ccar.colorado.edu/ASEN5070/handouts/coordsys.doc
@@ -113,7 +126,7 @@ public static class ExtensionMethods
         return new Geodetic<double>(latitude: latitude, longitude: longitude, altitude: height);
     }
 
-    public static Geodetic<double> ToGeodetic(EarthCenteredInertial<double> eci, IPlanet planet, DateTime utc)
+    public static Geodetic<double> ToGeodetic(this EarthCenteredInertial<double> eci, IPlanet planet, DateTime utc)
     {
         var gmst = new Julian(utc).ToGmst();
 

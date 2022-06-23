@@ -12,7 +12,6 @@ public interface IPlanet
     double J3 { get; }
     double J4 { get; }
     double Flattening { get; }
-    double B { get; }
 
     public static Orbit operator &(IKeplerianElements<double> keplerianElements, IPlanet planet)
     {

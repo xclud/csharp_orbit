@@ -13,7 +13,6 @@ public static class Earth
         public double J3 => -0.00000253881;
         public double J4 => -0.00000165597;
         public double Flattening => 1 / 298.26;
-        public double B => Radius * (1 - Flattening);
     }
 
     private sealed class _WGS84 : IPlanet
@@ -24,6 +23,5 @@ public static class Earth
         public double J3 => -0.00000253215306;
         public double J4 => -0.00000161098761;
         public double Flattening => 1 / 298.257223563;
-        public double B => Radius * (1 - Flattening);
     }
 }
