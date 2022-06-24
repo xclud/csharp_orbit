@@ -47,7 +47,12 @@ Console.WriteLine("\nExample output:");
 // 0.00 N, 100.00 W, 0 km altitude
 var observer = new Geodetic<double>(0.0, -100.0 / 180.0 * Math.PI, 0);
 var eci = sgp.GetPosition(now);
+
+var zone = CalculZoneVisibilite(51, 35, eci.Position);
+
 var ll = Earth.WGS84.GetLookAngle(observer, eci.Position, now);
+
+var c = zone;
 
 //var when = satellite.Epoch.AddDays(900);
 //// Now get the "look angle" from the site to the satellite. 
@@ -118,4 +123,50 @@ void PrintPosVel(IKeplerianElements<double> tle)
                       e.Velocity.Y,
                       e.Velocity.Z);
     }
+}
+
+Geodetic<double>[] CalculZoneVisibilite(double longitude, double latitude, EarthCenteredInertial<double> position)
+{
+    var _zone = new Geodetic<double>[361];
+
+    double num = longitude;
+    if (num > 0.0)
+    {
+        num -= Math.PI * 2.0;
+    }
+    double num2 = Math.Cos(latitude);
+    double num3 = Math.Sin(latitude);
+    double num4 = Math.Acos(6363.136658 / position.Length());
+    if (double.IsNaN(num4))
+    {
+        num4 = 0.0;
+    }
+    double num5 = Math.Cos(num4);
+    double num6 = Math.Sin(num4);
+    int i = 0;
+    do
+    {
+        double d = Math.PI / 180.0 * i;
+        double lat = Math.Asin(num3 * num5 + Math.Cos(d) * num6 * num2);
+        double num9 = (num5 - num3 * Math.Sin(lat)) / (num2 * Math.Cos(lat));
+        double lng = (((i != 0 || !(num4 > Math.PI / 2.0 - latitude)) && 0 == 0) ? (((i == 180 && num4 > Math.PI / 2.0 + latitude) ? true : false) ? (num + Math.PI) : ((Math.Abs(num9) > 1.0) ? num : ((i > 180) ? (num - Math.Acos(num9)) : (num + Math.Acos(num9))))) : (num + Math.PI));
+
+        const double twoPi = Math.PI * 2.0;
+
+        var finalLng = (Math.PI - lng) % twoPi;
+        var finalLat = (Math.PI / 2.0 - lat);
+
+        var z = new Geodetic<double>(finalLat, finalLng, 0);
+
+        _zone[i] = z;
+
+        i++;
+    }
+
+
+    while (i <= 359);
+
+    _zone[360] = new Geodetic<double>(_zone[0]);
+
+    return _zone;
 }
