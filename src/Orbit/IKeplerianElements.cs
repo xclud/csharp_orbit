@@ -24,14 +24,6 @@ public interface IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 
     public T MeanMotion { get; }
 
-    /// <summary>
-    /// This tells the tracking program how many times the satellite has orbited from the time
-    /// it was launched until the time specified by “Epoch”.
-    /// 
-    /// <para>Epoch Rev is used to calculate the revolution number displayed by the tracking program.</para>
-    /// </summary>
-    public int RevolutionNumberAtEpoch { get; }
-
 
     /// <summary>
     /// The orbit ellipse lies in a plane known as the orbital plane. The orbital plane always goes through the center of the earth,

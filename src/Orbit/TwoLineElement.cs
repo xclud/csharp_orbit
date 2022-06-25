@@ -142,8 +142,6 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
     T IKeplerianElements<T>.MeanMotion => MeanMotion;
 
-    int IKeplerianElements<T>.RevolutionNumberAtEpoch => RevolutionNumberAtEpoch;
-
     T IKeplerianElements<T>.Inclination => Inclination;
 
     T IKeplerianElements<T>.RightAscensionOfAscendingNode => RightAscensionOfAscendingNode;

@@ -4,7 +4,7 @@ namespace System;
 
 public sealed class KeplerianElements<T> : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {
-    public KeplerianElements(T epoch, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanMotion, T meanAnomaly, T drag, int revolutionNumberAtEpoch)
+    public KeplerianElements(T epoch, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanMotion, T meanAnomaly, T drag)
     {
         Epoch = epoch;
         Eccentricity = eccentricity;
@@ -14,7 +14,6 @@ public sealed class KeplerianElements<T> : IKeplerianElements<T> where T : INumb
         MeanMotion = meanMotion;
         MeanAnomaly = meanAnomaly;
         Drag = drag;
-        RevolutionNumberAtEpoch = revolutionNumberAtEpoch;
     }
 
     public readonly T Epoch;
@@ -33,15 +32,11 @@ public sealed class KeplerianElements<T> : IKeplerianElements<T> where T : INumb
 
     public readonly T Drag;
 
-    public readonly int RevolutionNumberAtEpoch;
-
     T IKeplerianElements<T>.Epoch => Epoch;
 
     T IKeplerianElements<T>.Eccentricity => Eccentricity;
 
     T IKeplerianElements<T>.MeanMotion => MeanMotion;
-
-    int IKeplerianElements<T>.RevolutionNumberAtEpoch => RevolutionNumberAtEpoch;
 
     T IKeplerianElements<T>.Inclination => Inclination;
 
