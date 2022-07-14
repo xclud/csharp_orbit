@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace System;
+namespace System.Astronomy;
 
 /// <summary>
 /// Encapsulates geocentric coordinates.

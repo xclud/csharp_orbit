@@ -1,4 +1,4 @@
-﻿namespace System;
+﻿namespace System.Astronomy;
 
 internal interface ICartesianElements
 {

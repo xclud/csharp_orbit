@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace System;
+﻿namespace System.Astronomy;
 
 public static class ExtensionMethods
 {
@@ -23,6 +17,65 @@ public static class ExtensionMethods
         return (utc - epoch).TotalMinutes;
     }
 
+    public static IEnumerable<OrbitalState<double>> CalculatePositions(this IPlanet planet, OrbitalState<double> rv, TimeSpan interval)
+    {
+        var tspan = interval.TotalSeconds;
+
+        var posX = rv.Position.X;
+        var posY = rv.Position.Y;
+        var posZ = rv.Position.Z;
+
+        double vX = rv.Velocity.X;
+        double vY = rv.Velocity.Y;
+        double vZ = rv.Velocity.Z;
+
+        var T = new Matrix(3, 3);
+        var ww = 0.00007292115146707;
+        var RE = planet.Radius;
+        var mu = planet.Mu;
+        var J2 = planet.J2;
+
+        string sb;
+        Matrix w = Matrix.Parse($"0 0 {ww}");
+        sb = posX + " " + posY + " " + posZ + " ";
+        Matrix R = Matrix.Parse(sb);
+        Matrix R0 = Matrix.Parse(sb);
+        sb = vX + " " + vY + " " + vZ + " ";
+        Matrix V0 = Matrix.Parse(sb);
+        Matrix V = V0 + Matrix.Cross(w, R0);
+        double wspan = tspan;
+        while (true)
+        {
+            Matrix r = R;
+            var z = r[0, 2];
+            sb = "0 0 " + (2 * z);
+            Matrix ZZ = Matrix.Parse(sb);
+            R += tspan * V;
+            Matrix temp0 = ((1 - (5 * z * z / Math.Pow(Matrix.Norm(r), 2))) * r) + ZZ;
+            double temp1 = 3 * mu * J2 * Math.Pow(RE, 2) / (2 * Math.Pow(Matrix.Norm(r), 5));
+            V += tspan * ((-mu / Math.Pow(Matrix.Norm(r), 3) * r) - (temp1 * temp0));
+            var theta = ww * wspan;
+            wspan += tspan;
+            T[0, 0] = Math.Cos(theta);
+            T[0, 1] = Math.Sin(theta);
+            T[0, 2] = 0;
+            T[1, 0] = -Math.Sin(theta);
+            T[1, 1] = Math.Cos(theta);
+            T[1, 2] = 0;
+            T[2, 0] = 0;
+            T[2, 1] = 0;
+            T[2, 2] = 1;
+            r = T * Matrix.Transpose(R);
+            var Vk = T * Matrix.Transpose(V - Matrix.Cross(w, R));
+
+            var rrr = new EarthCenteredInertial<double>(r[0, 0], r[1, 0], r[2, 0]);
+            var vvv = new EarthCenteredInertial<double>(Vk[0, 0], Vk[1, 0], Vk[2, 0]);
+            var pv = new OrbitalState<double>(rrr, vvv);
+
+            yield return pv;
+        }
+    }
+
 
     public static EarthCenteredInertial<double> ToEci(this EarthCenteredEarthFixed<double> ecf, double gmst)
     {
@@ -33,7 +86,7 @@ public static class ExtensionMethods
         // [Z]eci  [0  0  1][Z]ecf
         //
         var x = (ecf.X * Math.Cos(gmst)) - (ecf.Y * Math.Sin(gmst));
-        var y = (ecf.X * (Math.Sin(gmst))) + (ecf.Y * Math.Cos(gmst));
+        var y = (ecf.X * Math.Sin(gmst)) + (ecf.Y * Math.Cos(gmst));
         var z = ecf.Z;
 
         return new EarthCenteredInertial<double>(x: x, y: y, z: z);
@@ -81,7 +134,7 @@ public static class ExtensionMethods
 
         var a = planet.Radius;
         var f = planet.Flattening;
-        var e2 = ((2 * f) - (f * f));
+        var e2 = (2 * f) - (f * f);
         var normal = a / Math.Sqrt(1 - (e2 * (Math.Sin(latitude) * Math.Sin(latitude))));
 
         var x = (normal + height) * Math.Cos(latitude) * Math.Cos(longitude);
@@ -97,7 +150,7 @@ public static class ExtensionMethods
         // http://www.celestrak.com/columns/v02n03/
         var a = planet.Radius;
         var f = planet.Flattening;
-        var e2 = ((2 * f) - (f * f));
+        var e2 = (2 * f) - (f * f);
 
         var R = Math.Sqrt((eci.X * eci.X) + (eci.Y * eci.Y));
 

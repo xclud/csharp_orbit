@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace System;
+namespace System.Astronomy;
 
 /// <summary>
 /// In astrodynamics and celestial dynamics, the orbital state vectors of an orbit are Cartesian vectors of position (r) and velocity (v) that together with their time (epoch) (t) uniquely determine the trajectory of the orbiting body in space.

@@ -1,4 +1,4 @@
-﻿namespace System;
+﻿namespace System.Astronomy;
 
 public sealed class SGP4 : ICartesianElements
 {

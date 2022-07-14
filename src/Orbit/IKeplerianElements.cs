@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace System;
+namespace System.Astronomy;
 
 public interface IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {

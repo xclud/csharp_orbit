@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace System;
+namespace System.Astronomy;
 
 /// <summary>
 /// This class encapsulates a single set of standard NORAD two-line element.

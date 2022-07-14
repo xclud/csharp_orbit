@@ -1,4 +1,4 @@
-namespace System;
+namespace System.Astronomy;
 
 /// <summary>
 /// This class provides a base class for the NORAD SGP4/SDP4 orbit models.

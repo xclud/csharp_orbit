@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace System;
+namespace System.Astronomy;
 
 public sealed class KeplerianElements<T> : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {
