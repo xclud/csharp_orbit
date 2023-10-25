@@ -7,14 +7,8 @@ namespace System.Astronomy;
 /// 
 /// <seealso cref="https://en.wikipedia.org/wiki/Orbital_state_vectors"/>
 /// </summary>
-public sealed class OrbitalState<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class OrbitalState<T>(EarthCenteredInertial<T> position, EarthCenteredInertial<T> velocity) where T : INumber<T>, IFloatingPoint<T>
 {
-    public readonly EarthCenteredInertial<T> Position;
-    public readonly EarthCenteredInertial<T> Velocity;
-
-    public OrbitalState(EarthCenteredInertial<T> position, EarthCenteredInertial<T> velocity)
-    {
-        Position = position;
-        Velocity = velocity;
-    }
+    public readonly EarthCenteredInertial<T> Position = position;
+    public readonly EarthCenteredInertial<T> Velocity = velocity;
 }

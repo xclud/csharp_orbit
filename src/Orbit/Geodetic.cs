@@ -5,48 +5,29 @@ namespace System.Astronomy;
 /// <summary>
 /// Encapsulates geocentric coordinates.
 /// </summary>
-public sealed class Geodetic<T> where T : INumber<T>, IFloatingPoint<T>
+/// <remarks>
+/// Creates a new instance of the class with the given components.
+/// </remarks>
+/// <param name="latitude">Latitude, in radians. Negative values indicate latitude south.</param>
+/// <param name="longitude">Longitude, in radians. Negative value indicate longitude
+/// west.</param>
+/// <param name="altitude">Altitude above the ellipsoid model, in kilometers.</param>
+public sealed class Geodetic<T>(T latitude, T longitude, T altitude) where T : INumber<T>, IFloatingPoint<T>
 {
-    /// <summary>
-    /// Creates a new instance of the class with the given components.
-    /// </summary>
-    /// <param name="latitude">Latitude, in radians. Negative values indicate latitude south.</param>
-    /// <param name="longitude">Longitude, in radians. Negative value indicate longitude
-    /// west.</param>
-    /// <param name="altitude">Altitude above the ellipsoid model, in kilometers.</param>
-    public Geodetic(T latitude, T longitude, T altitude)
-    {
-        Latitude = latitude;
-        Longitude = longitude;
-        Altitude = altitude;
-    }
-
-    /// <summary>
-    /// Creates a Geo object from a source Geo object.
-    /// </summary>
-    /// <param name="geo">The source Geo object.</param>
-    public Geodetic(Geodetic<T> geo)
-    {
-        Latitude = geo.Latitude;
-        Longitude = geo.Longitude;
-        Altitude = geo.Altitude;
-    }
-
-
     /// <summary>
     /// Latitude, in radians. A negative value indicates latitude south.
     /// </summary>
-    public readonly T Latitude;
+    public readonly T Latitude = latitude;
 
     /// <summary>
     /// Longitude, in radians. A negative value indicates longitude west.
     /// </summary>
-    public readonly T Longitude;
+    public readonly T Longitude = longitude;
 
     /// <summary>
     /// Altitude, in kilometers, above the ellipsoid model.
     /// </summary>
-    public readonly T Altitude;
+    public readonly T Altitude = altitude;
 
 
     /// <summary>

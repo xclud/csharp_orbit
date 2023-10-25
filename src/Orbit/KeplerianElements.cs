@@ -2,35 +2,23 @@
 
 namespace System.Astronomy;
 
-public sealed class KeplerianElements<T> : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanMotion, T meanAnomaly, T drag) : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {
-    public KeplerianElements(T epoch, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanMotion, T meanAnomaly, T drag)
-    {
-        Epoch = epoch;
-        Eccentricity = eccentricity;
-        Inclination = inclination;
-        RightAscensionOfAscendingNode = rightAscensionOfAscendingNode;
-        ArgumentOfPeriapsis = argumentOfPeriapsis;
-        MeanMotion = meanMotion;
-        MeanAnomaly = meanAnomaly;
-        Drag = drag;
-    }
+    public readonly T Epoch = epoch;
 
-    public readonly T Epoch;
+    public readonly T Eccentricity = eccentricity;
 
-    public readonly T Eccentricity;
+    public readonly T Inclination = inclination;
 
-    public readonly T Inclination;
+    public readonly T RightAscensionOfAscendingNode = rightAscensionOfAscendingNode;
 
-    public readonly T RightAscensionOfAscendingNode;
+    public readonly T ArgumentOfPeriapsis = argumentOfPeriapsis;
 
-    public readonly T ArgumentOfPeriapsis;
+    public readonly T MeanMotion = meanMotion;
 
-    public readonly T MeanMotion;
+    public readonly T MeanAnomaly = meanAnomaly;
 
-    public readonly T MeanAnomaly;
-
-    public readonly T Drag;
+    public readonly T Drag = drag;
 
     T IKeplerianElements<T>.Epoch => Epoch;
 

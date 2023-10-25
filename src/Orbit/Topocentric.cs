@@ -2,17 +2,9 @@
 
 namespace System.Astronomy;
 
-
-public sealed class Topocentric<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class Topocentric<T>(T south, T east, T normal) where T : INumber<T>, IFloatingPoint<T>
 {
-    public Topocentric(T south, T east, T normal)
-    {
-        this.South = south;
-        this.East = east;
-        this.Normal = normal;
-    }
-
-    public readonly T South;
-    public readonly T East;
-    public readonly T Normal;
+    public readonly T South = south;
+    public readonly T East = east;
+    public readonly T Normal = normal;
 }

@@ -168,7 +168,7 @@ Geodetic<double>[] CalculZoneVisibilite(double longitude, double latitude, Earth
 
     while (i <= 359);
 
-    _zone[360] = new Geodetic<double>(_zone[0]);
+    _zone[360] = new Geodetic<double>(_zone[0].Latitude, _zone[0].Longitude, _zone[0].Altitude);
 
     return _zone;
 }
