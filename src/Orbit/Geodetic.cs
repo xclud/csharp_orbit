@@ -47,7 +47,7 @@ public sealed class Geodetic<T>(T latitude, T longitude, T altitude) where T : I
         var u = latNorth ? 'N' : 'S';
         var v = lonEast ? 'E' : 'W';
 
-        string str = $"{Math.Abs(lat):00.0} {u}, {Math.Abs(lng):000.0} {v}, {alt/1000.0:F3} km";
+        string str = $"{Math.Abs(lat):00.0} {u}, {Math.Abs(lng):000.0} {v}, {alt / 1000.0:F3} km";
 
         return str;
     }
