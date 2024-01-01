@@ -914,7 +914,7 @@ internal static class SPACalculator
         return ThirdOrderPolynomial(1.0 / 450000.0, 0.0020708, -1934.136261, 125.04452, jce);
     }
 
-    static double XYTermSummation(int i, double[] x = null)
+    static double XYTermSummation(int i, double[]? x = null)
     {
         x = x ?? new double[(int)TERM2.TERM_X_COUNT];
         int j;

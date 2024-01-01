@@ -2,7 +2,7 @@
 
 namespace System.Astronomy;
 
-internal class Matrix
+internal partial class Matrix
 {
     public int rows;
     public int cols;
@@ -94,14 +94,12 @@ internal class Matrix
             pi[i] = i;
         }
 
-        double p = 0;
         double pom2;
         int k0 = 0;
-        int pom1 = 0;
 
         for (int k = 0; k < cols - 1; k++)
         {
-            p = 0;
+            var p = 0.0;
             for (int i = k; i < rows; i++)      // find the row with the biggest pivot
             {
                 if (Math.Abs(U[i, k]) > p)
@@ -115,7 +113,8 @@ internal class Matrix
                 throw new MatrixException("The matrix is singular!");
             }
 
-            pom1 = pi[k]; pi[k] = pi[k0]; pi[k0] = pom1;    // switch two rows in permutation matrix
+            // switch two rows in permutation matrix
+            (pi[k0], pi[k]) = (pi[k], pi[k0]);
 
             for (int i = 0; i < k; i++)
             {
@@ -137,7 +136,7 @@ internal class Matrix
                 L[i, k] = U[i, k] / U[k, k];
                 for (int j = k; j < cols; j++)
                 {
-                    U[i, j] = U[i, j] - (L[i, k] * U[k, j]);
+                    U[i, j] = U[i, j] - L[i, k] * U[k, j];
                 }
             }
         }
@@ -164,11 +163,11 @@ internal class Matrix
         Matrix b = new(rows, 1);
         for (int i = 0; i < rows; i++)
         {
-            b[i, 0] = v[pi[i], 0];   // switch two items in "v" due to permutation matrix
+            b[i, 0] = v[pi![i], 0];   // switch two items in "v" due to permutation matrix
         }
 
-        Matrix z = SubsForth(L, b);
-        Matrix x = SubsBack(U, z);
+        Matrix z = SubsForth(L!, b);
+        Matrix x = SubsBack(U!, z);
 
         return x;
     }
@@ -203,7 +202,7 @@ internal class Matrix
         double det = detOfP;
         for (int i = 0; i < rows; i++)
         {
-            det *= U[i, i];
+            det *= U![i, i];
         }
 
         return det;
@@ -222,7 +221,7 @@ internal class Matrix
         Matrix matrix = ZeroMatrix(rows, cols);
         for (int i = 0; i < rows; i++)
         {
-            matrix[pi[i], i] = 1;
+            matrix[pi![i], i] = 1;
         }
 
         return matrix;
@@ -331,7 +330,7 @@ internal class Matrix
     public static Matrix Parse(string ps)                        // Function parses the matrix from string
     {
         string s = NormalizeMatrixString(ps);
-        string[] rows = Regex.Split(s, "\r\n");
+        string[] rows = CRLF().Split(s);
         string[] nums = rows[0].Split(' ');
         Matrix matrix = new(rows.Length, nums.Length);
         try
@@ -351,7 +350,7 @@ internal class Matrix
     public static Matrix Parse2(string ps)                        // Function parses the matrix from string
     {
         string s = NormalizeMatrixString(ps);
-        string[] rows = Regex.Split(s, ";");
+        string[] rows = Semicolon().Split(s);
         string[] nums = rows[0].Split(' ');
         Matrix matrix = new(rows.Length, nums.Length);
         try
@@ -365,7 +364,11 @@ internal class Matrix
                 }
             }
         }
-        catch (FormatException exc) { throw new MatrixException("Wrong input format!"); }
+        catch (FormatException exc)
+        {
+            throw new MatrixException($"Wrong input format! {exc.Message}");
+        }
+
         return matrix;
     }
 
@@ -798,16 +801,16 @@ internal class Matrix
 
 
         return val1.rows == 1 && val1.cols == 3
-            ? (val1[0, 0] * val2[0, 0]) + (val1[0, 1] * val2[0, 1]) + (val1[0, 2] * val2[0, 2])
-            : val1.rows == 3 && val1.cols == 1 ? (val1[0, 0] * val2[0, 0]) + (val1[1, 0] * val2[1, 0]) + (val1[2, 0] * val2[2, 0]) : -1;
+            ? val1[0, 0] * val2[0, 0] + val1[0, 1] * val2[0, 1] + val1[0, 2] * val2[0, 2]
+            : val1.rows == 3 && val1.cols == 1 ? val1[0, 0] * val2[0, 0] + val1[1, 0] * val2[1, 0] + val1[2, 0] * val2[2, 0] : -1;
     }
 
     public static Matrix Cross(Matrix val1, Matrix val2)
     {
         Matrix Rc = new(1, 3);
-        Rc[0, 0] = (val1[0, 1] * val2[0, 2]) - (val1[0, 2] * val2[0, 1]);
-        Rc[0, 1] = (val1[0, 2] * val2[0, 0]) - (val1[0, 0] * val2[0, 2]);
-        Rc[0, 2] = (val1[0, 0] * val2[0, 1]) - (val1[0, 1] * val2[0, 0]);
+        Rc[0, 0] = val1[0, 1] * val2[0, 2] - val1[0, 2] * val2[0, 1];
+        Rc[0, 1] = val1[0, 2] * val2[0, 0] - val1[0, 0] * val2[0, 2];
+        Rc[0, 2] = val1[0, 0] * val2[0, 1] - val1[0, 1] * val2[0, 0];
         return Rc;
     }
 
@@ -878,11 +881,13 @@ internal class Matrix
 
     public static Matrix operator *(double n, Matrix m)
     { return Multiply(n, m); }
+
+    [GeneratedRegex("\r\n")]
+    private static partial Regex CRLF();
+    [GeneratedRegex(";")]
+    private static partial Regex Semicolon();
 }
 
-internal class MatrixException : Exception
+internal sealed class MatrixException(string Message) : Exception(Message)
 {
-    public MatrixException(string Message)
-        : base(Message)
-    { }
 }

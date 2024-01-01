@@ -97,18 +97,18 @@ internal sealed class Julian
     /// The first day of the year, Jan 1, is day 1.0. Noon on Jan 1 is 
     /// represented by the day value of 1.5, etc.
     /// </remarks>
-    protected void Initialize(int year, double doy)
+    private void Initialize(int year, double doy)
     {
         // Arbitrary years used for error checking
         if (year is < 1900 or > 2100)
         {
-            throw new ArgumentOutOfRangeException("year");
+            throw new ArgumentOutOfRangeException(nameof(year));
         }
 
         // The last day of a leap year is day 366
         if (doy is < 1.0 or >= 367.0)
         {
-            throw new ArgumentOutOfRangeException("doy");
+            throw new ArgumentOutOfRangeException(nameof(doy));
         }
 
         // Now calculate Julian date

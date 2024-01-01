@@ -11,7 +11,7 @@ public class TleTests
         string str3 = "2 88888  72.8435 115.9689 0086731  52.6988 110.5714 16.05824518   105";
 
         var tle = TwoLineElement<decimal>.Parse(str1, str2, str3);
-        var ke = tle;
+        var ke = tle.KeplerianElements;
 
         Assert.AreEqual(ke.Epoch, 80275.98708465m);
         Assert.AreEqual(ke.Inclination, 72.8435m);
@@ -31,7 +31,7 @@ public class TleTests
         string str3 = "2 22824  98.6242 303.1417 0007629 108.0132 252.1969 14.27315768  3864";
 
         var tle = TwoLineElement<decimal>.Parse(str1, str2, str3);
-        var ke = tle;
+        var ke = tle.KeplerianElements;
 
         Assert.AreEqual(ke.Epoch, 13001.82735048m);
         Assert.AreEqual(ke.Drag, 0.00051624m);
@@ -47,9 +47,23 @@ public class TleTests
         string str3 = "2 26959  97.8817 215.5979 0013092 320.2664 188.6125 15.18597754618041";
 
         var tle = TwoLineElement<decimal>.Parse(str1, str2, str3);
-        var ke = tle;
+        var ke = tle.KeplerianElements;
 
         Assert.AreEqual(ke.MeanAnomaly, 188.6125m);
+
+    }
+
+    [TestMethod]
+    public void TBA()
+    {
+        string str1 = "0 TBA - TO BE ASSIGNED";
+        string str2 = "1 T0038U          23343.89355734  .00002702  00000-0  12997-1 0  9990";
+        string str3 = "2 T0038 102.5718 355.7923 0205926 353.6386   6.2087 12.68552858186995";
+
+        var tle = TwoLineElement<decimal>.Parse(str1, str2, str3);
+        var ke = tle.KeplerianElements;
+
+        Assert.AreEqual(tle.Id, "T0038");
 
     }
 
