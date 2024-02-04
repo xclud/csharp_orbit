@@ -44,37 +44,6 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
     /// </summary>
     public readonly int RevolutionNumberAtEpoch;
 
-
-    #region Column Offsets
-
-    // Note: The column offsets are zero-based.
-
-    // Name
-    private const int TLE_LEN_LINE_DATA = 69; private const int TLE_LEN_LINE_NAME = 24;
-
-    // Line 1
-    private const int TLE1_COL_SATNUM = 2; private const int TLE1_LEN_SATNUM = 5;
-    private const int TLE1_COL_INTLDESC_A = 9; private const int TLE1_LEN_INTLDESC_A = 2;
-    private const int TLE1_COL_INTLDESC_B = 11; private const int TLE1_LEN_INTLDESC_B = 3;
-    private const int TLE1_COL_INTLDESC_C = 14; private const int TLE1_LEN_INTLDESC_C = 3;
-    private const int TLE1_COL_EPOCH_A = 18; private const int TLE1_LEN_EPOCH_A = 2;
-    private const int TLE1_COL_EPOCH_B = 20; private const int TLE1_LEN_EPOCH_B = 12;
-    private const int TLE1_COL_MEANMOTIONDT = 33; private const int TLE1_LEN_MEANMOTIONDT = 10;
-    private const int TLE1_COL_MEANMOTIONDT2 = 44; private const int TLE1_LEN_MEANMOTIONDT2 = 8;
-    private const int TLE1_COL_BSTAR = 53; private const int TLE1_LEN_BSTAR = 8;
-    private const int TLE1_COL_EPHEMTYPE = 62; private const int TLE1_LEN_EPHEMTYPE = 1;
-    private const int TLE1_COL_ELNUM = 64; private const int TLE1_LEN_ELNUM = 4;
-
-    // Line 2
-    private const int TLE2_COL_SATNUM = 2; private const int TLE2_LEN_SATNUM = 5;
-    private const int TLE2_COL_INCLINATION = 8; private const int TLE2_LEN_INCLINATION = 8;
-    private const int TLE2_COL_RAASCENDNODE = 17; private const int TLE2_LEN_RAASCENDNODE = 8;
-    private const int TLE2_COL_ECCENTRICITY = 26; private const int TLE2_LEN_ECCENTRICITY = 7;
-    private const int TLE2_COL_ARGPERIGEE = 34; private const int TLE2_LEN_ARGPERIGEE = 8;
-    private const int TLE2_COL_MEANANOMALY = 43; private const int TLE2_LEN_MEANANOMALY = 8;
-    private const int TLE2_COL_MEANMOTION = 52; private const int TLE2_LEN_MEANMOTION = 11;
-    private const int TLE2_COL_REVATEPOCH = 63; private const int TLE2_LEN_REVATEPOCH = 5;
-
     T IKeplerianElements<T>.Epoch => KeplerianElements.Epoch;
 
     T IKeplerianElements<T>.Eccentricity => KeplerianElements.Eccentricity;
@@ -91,7 +60,6 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
     T IKeplerianElements<T>.Drag => KeplerianElements.Drag;
 
-    #endregion
 
     public TwoLineElement(string name, string classification, string noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T drag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, int revolutionNumberAtEpoch)
     {
@@ -120,12 +88,12 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
     public static TwoLineElement<T> Parse(string name, string line1, string line2)
     {
-        var noradNumber = line1[TLE1_COL_SATNUM..(TLE1_LEN_SATNUM + TLE1_COL_SATNUM)];
+        var noradNumber = line1[2..7];
         var classification = line1.Substring(7, 1);
 
-        var intlYY = line1.Substring(TLE1_COL_INTLDESC_A, TLE1_LEN_INTLDESC_A);
-        var intlLN = line1.Substring(TLE1_COL_INTLDESC_A + TLE1_LEN_INTLDESC_A, TLE1_LEN_INTLDESC_B);
-        var intlPL = line1.Substring(TLE1_COL_INTLDESC_A + TLE1_LEN_INTLDESC_A + TLE1_LEN_INTLDESC_B, TLE1_LEN_INTLDESC_C);
+        var intlYY = line1.Substring(9, 2);
+        var intlLN = line1.Substring(11, 3);
+        var intlPL = line1.Substring(14, 3);
 
         var idYY = 0;
         if (!string.IsNullOrWhiteSpace(intlYY))
@@ -143,58 +111,58 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
         var intl = new SatelliteCatalogNumber(idYY, idLN, idPL);
 
 
-        var epoch = ParseDecimal(line1, TLE1_COL_EPOCH_A, TLE1_LEN_EPOCH_A + TLE1_LEN_EPOCH_B);
+        var epoch = ParseDecimal(line1, 18, 2 + 12);
 
-        var setNumber = line1.Substring(TLE1_COL_ELNUM, TLE1_LEN_ELNUM).TrimStart();
+        var setNumber = line1.Substring(64, 4).TrimStart();
         var SetNumber = string.IsNullOrWhiteSpace(setNumber) ? T.Zero : T.Parse(setNumber, null);
 
 
         var meanMotionDt = "0";
-        if (line1[TLE1_COL_MEANMOTIONDT] == '-')
+        if (line1[33] == '-')
         {
             // value is negative
             meanMotionDt = "-0";
         }
 
-        meanMotionDt += line1.Substring(TLE1_COL_MEANMOTIONDT + 1, TLE1_LEN_MEANMOTIONDT);
+        meanMotionDt += line1.Substring(33 + 1, 10);
         var MeanMotionDt = T.Parse(meanMotionDt, null);
 
         // T point assumed; exponential notation
-        var MeanMotionDt2 = ExpToDecimal(line1.Substring(TLE1_COL_MEANMOTIONDT2, TLE1_LEN_MEANMOTIONDT2));
+        var MeanMotionDt2 = ExpToDecimal(line1.Substring(44, 8));
 
 
         // T point assumed; exponential notation
-        var BStarDrag = ExpToDecimal(line1.Substring(TLE1_COL_BSTAR, TLE1_LEN_BSTAR));
+        var BStarDrag = ExpToDecimal(line1.Substring(53, 8));
 
-        var Eccentricity = T.Parse("0." + line2.Substring(TLE2_COL_ECCENTRICITY, TLE2_LEN_ECCENTRICITY), null);
-
-
-        var Inclination = T.Parse(line2.Substring(TLE2_COL_INCLINATION, TLE2_LEN_INCLINATION).TrimStart(), null);
+        var Eccentricity = T.Parse("0." + line2.Substring(26, 7), null);
 
 
+        var Inclination = T.Parse(line2.Substring(8, 8).TrimStart(), null);
 
-        var raan = line2.Substring(TLE2_COL_RAASCENDNODE, TLE2_LEN_RAASCENDNODE).TrimStart();
+
+
+        var raan = line2.Substring(17, 8).TrimStart();
         var Raan = T.Parse(raan, null);
 
-        var argPerigee = line2.Substring(TLE2_COL_ARGPERIGEE, TLE2_LEN_ARGPERIGEE).TrimStart();
+        var argPerigee = line2.Substring(34, 8).TrimStart();
         var ArgPerigee = T.Parse(argPerigee, null);
 
-        var meanAnomaly = line2.Substring(TLE2_COL_MEANANOMALY, TLE2_LEN_MEANANOMALY).TrimStart();
+        var meanAnomaly = line2.Substring(43, 8).TrimStart();
         var MeanAnomaly = T.Parse(meanAnomaly, null);
 
-        var meanMotion = line2.Substring(TLE2_COL_MEANMOTION, TLE2_LEN_MEANMOTION).TrimStart();
+        var meanMotion = line2.Substring(52, 11).TrimStart();
         var MeanMotion = T.Parse(meanMotion, null);
 
-        var revAtEpoch = line2.Substring(TLE2_COL_REVATEPOCH, TLE2_LEN_REVATEPOCH).TrimStart();
+        var revAtEpoch = line2.Substring(63, 5).TrimStart();
 
         var RevAtEpoch = string.IsNullOrEmpty(revAtEpoch) ? 0 : int.Parse(revAtEpoch, null);
 
         return new TwoLineElement<T>(name, classification, noradNumber, intl, epoch, MeanMotionDt, MeanMotionDt2, BStarDrag, SetNumber, Eccentricity, Inclination, Raan, ArgPerigee, MeanAnomaly, MeanMotion, RevAtEpoch);
     }
 
-    private static T ParseDecimal(string str, int start, int end)
+    private static T ParseDecimal(string str, int start, int length)
     {
-        var sub = str.Substring(start, end);
+        var sub = str.Substring(start, length);
 
         return T.Parse(sub, null);
     }
