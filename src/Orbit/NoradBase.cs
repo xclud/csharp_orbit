@@ -272,7 +272,7 @@ internal abstract class NoradBase : ICartesianElements
         var vecPos = new EarthCenteredInertial<double>(x, y, z);
         var gmt = new Julian(Orbit.EpochJ);
 
-        gmt.AddMin(tsince);
+        gmt = gmt.AddMin(tsince);
 
         // Validate on altitude
         double altKm = vecPos.Length() * (Xkmper / Globals.Ae);

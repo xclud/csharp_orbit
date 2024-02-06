@@ -17,7 +17,7 @@ public static class PlanetExtensions
         return 60.0 / Math.Sqrt(earthRadius * earthRadius * earthRadius / mu);
     }
 
-    public static Topocentric<double> Topocentric(this IPlanet planet, Geodetic<double> observer, EarthCenteredEarthFixed<double> satellite)
+    public static Topocentric<double> Topocentric(this IPlanet planet, LatLongAlt<double> observer, EarthCenteredEarthFixed<double> satellite)
     {
         // http://www.celestrak.com/columns/v02n02/
         // TS Kelso's method, except I'm using ECF frame
@@ -44,20 +44,20 @@ public static class PlanetExtensions
     }
 
 
-    public static LookAngle<double> GetLookAngle(this IPlanet planet, Geodetic<double> observer, EarthCenteredEarthFixed<double> satellite)
+    public static LookAngle<double> GetLookAngle(this IPlanet planet, LatLongAlt<double> observer, EarthCenteredEarthFixed<double> satellite)
     {
         var topocentricCoords = Topocentric(planet, observer, satellite);
         return topocentricCoords.ToLookAngle();
     }
 
-    public static LookAngle<double> GetLookAngle(this IPlanet planet, Geodetic<double> observer, EarthCenteredInertial<double> satellite, double gmst)
+    public static LookAngle<double> GetLookAngle(this IPlanet planet, LatLongAlt<double> observer, EarthCenteredInertial<double> satellite, double gmst)
     {
         var topocentricCoords = Topocentric(planet, observer, satellite.ToEcf(gmst));
         return topocentricCoords.ToLookAngle();
     }
 
 
-    public static LookAngle<double> GetLookAngle(this IPlanet planet, Geodetic<double> observer, EarthCenteredInertial<double> satellite, DateTime utc)
+    public static LookAngle<double> GetLookAngle(this IPlanet planet, LatLongAlt<double> observer, EarthCenteredInertial<double> satellite, DateTime utc)
     {
         var gmst = new Julian(utc).ToGmst();
 

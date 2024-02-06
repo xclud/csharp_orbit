@@ -32,7 +32,7 @@ public sealed class SGP4 : ICartesianElements
         year += year < 57 ? 2000 : 1900;
         var j = new Julian(year, doy);
 
-        double epoch = j.Date - 2433281.5;
+        double epoch = j.Value - 2433281.5;
 
 
         var earthRadius = planet.Radius;

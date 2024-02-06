@@ -12,7 +12,7 @@ namespace System.Astronomy;
 /// <param name="longitude">Longitude, in radians. Negative value indicate longitude
 /// west.</param>
 /// <param name="altitude">Altitude above the ellipsoid model, in kilometers.</param>
-public sealed class Geodetic<T>(T latitude, T longitude, T altitude) where T : INumber<T>, IFloatingPoint<T>
+public sealed class LatLongAlt<T>(T latitude, T longitude, T altitude) where T : INumber<T>, IFloatingPoint<T>
 {
     /// <summary>
     /// Latitude, in radians. A negative value indicates latitude south.

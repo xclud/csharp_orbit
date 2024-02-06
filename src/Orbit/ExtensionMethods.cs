@@ -126,7 +126,7 @@ public static class ExtensionMethods
     }
 
 
-    public static EarthCenteredEarthFixed<double> ToEcf(this Geodetic<double> geodetic, IPlanet planet)
+    public static EarthCenteredEarthFixed<double> ToEcf(this LatLongAlt<double> geodetic, IPlanet planet)
     {
         var longitude = geodetic.Longitude;
         var latitude = geodetic.Latitude;
@@ -145,7 +145,7 @@ public static class ExtensionMethods
     }
 
 
-    public static Geodetic<double> ToGeodetic(this EarthCenteredInertial<double> eci, IPlanet planet, double gmst)
+    public static LatLongAlt<double> ToGeodetic(this EarthCenteredInertial<double> eci, IPlanet planet, double gmst)
     {
         // http://www.celestrak.com/columns/v02n03/
         var a = planet.Radius;
@@ -176,10 +176,10 @@ public static class ExtensionMethods
         }
 
         var height = (R / Math.Cos(latitude)) - (a * C);
-        return new Geodetic<double>(latitude: latitude, longitude: longitude, altitude: height);
+        return new LatLongAlt<double>(latitude: latitude, longitude: longitude, altitude: height);
     }
 
-    public static Geodetic<double> ToGeodetic(this EarthCenteredInertial<double> eci, IPlanet planet, DateTime utc)
+    public static LatLongAlt<double> ToGeodetic(this EarthCenteredInertial<double> eci, IPlanet planet, DateTime utc)
     {
         var gmst = new Julian(utc).ToGmst();
 

@@ -10,12 +10,12 @@ internal sealed class Julian
     /// <summary>
     /// The Julian date.
     /// </summary>
-    public double Date { get; private set; }
+    public readonly double Value;
 
-    public double FromJan0_12h_1900() { return Date - EPOCH_JAN0_12H_1900; }
-    public double FromJan1_00h_1900() { return Date - EPOCH_JAN1_00H_1900; }
-    public double FromJan1_12h_1900() { return Date - EPOCH_JAN1_12H_1900; }
-    public double FromJan1_12h_2000() { return Date - EPOCH_JAN1_12H_2000; }
+    public double FromJan0_12h_1900() { return Value - EPOCH_JAN0_12H_1900; }
+    public double FromJan1_00h_1900() { return Value - EPOCH_JAN1_00H_1900; }
+    public double FromJan1_12h_1900() { return Value - EPOCH_JAN1_12H_1900; }
+    public double FromJan1_12h_2000() { return Value - EPOCH_JAN1_12H_2000; }
 
     #endregion
 
@@ -31,14 +31,12 @@ internal sealed class Julian
     /// contained in the DateTime object is assumed to be UTC.
     /// </summary>
     /// <param name="utc">The UTC time to convert.</param>
-    public Julian(DateTime utc)
-    {
-        double day = utc.DayOfYear +
+    public Julian(DateTime utc) : this(utc.Year, utc.DayOfYear +
            ((utc.Hour +
            ((utc.Minute +
-           ((utc.Second + (utc.Millisecond / 1000.0)) / 60.0)) / 60.0)) / 24.0);
+           ((utc.Second + (utc.Millisecond / 1000.0)) / 60.0)) / 60.0)) / 24.0))
+    {
 
-        Initialize(utc.Year, day);
     }
 
     /// <summary>
@@ -47,8 +45,44 @@ internal sealed class Julian
     /// <param name="julian">The Julian date object to copy.</param>
     public Julian(Julian julian)
     {
-        Date = julian.Date;
+        Value = julian.Value;
     }
+
+    #endregion
+
+    public Julian AddDay(double day) => new(Value + day);
+    public Julian AddHour(double hr) => new(Value + hr / Globals.HoursPerDay);
+    public Julian AddMin(double min) => new(Value + min / Globals.MinPerDay);
+    public Julian AddSec(double sec) => new(Value + Globals.SecPerDay);
+
+    /// <summary>
+    /// Calculates the time difference between two Julian dates.
+    /// </summary>
+    /// <param name="date">Julian date.</param>
+    /// <returns>
+    /// A TimeSpan representing the time difference between the two dates.
+    /// </returns>
+    public TimeSpan Diff(Julian date)
+    {
+        const double TICKS_PER_DAY = 8.64e11; // 1 tick = 100 nanoseconds
+        return new TimeSpan((long)((Value - date.Value) * TICKS_PER_DAY));
+    }
+
+    /// <summary>
+    /// Initialize the Julian date object.
+    /// </summary>
+    /// <param name="year">The year, including the century.</param>
+    /// <param name="doy">Day of year (1 means January 1, etc.)</param>
+    /// <remarks>
+    /// The first day of the year, Jan 1, is day 1.0. Noon on Jan 1 is 
+    /// represented by the day value of 1.5, etc.
+    /// </remarks>
+
+    private Julian(double date)
+    {
+        this.Value = date;
+    }
+
 
     /// <summary>
     /// Create a Julian date object given a year and day-of-year.
@@ -63,41 +97,8 @@ internal sealed class Julian
     ///    day = 1.5  Jan 1 12h
     ///    day = 2.0  Jan 2 00h
     /// </remarks>
+
     public Julian(int year, double doy)
-    {
-        Initialize(year, doy);
-    }
-
-    #endregion
-
-    public void AddDay(double day) { Date += day; }
-    public void AddHour(double hr) { Date += hr / Globals.HoursPerDay; }
-    public void AddMin(double min) { Date += min / Globals.MinPerDay; }
-    public void AddSec(double sec) { Date += sec / Globals.SecPerDay; }
-
-    /// <summary>
-    /// Calculates the time difference between two Julian dates.
-    /// </summary>
-    /// <param name="date">Julian date.</param>
-    /// <returns>
-    /// A TimeSpan representing the time difference between the two dates.
-    /// </returns>
-    public TimeSpan Diff(Julian date)
-    {
-        const double TICKS_PER_DAY = 8.64e11; // 1 tick = 100 nanoseconds
-        return new TimeSpan((long)((Date - date.Date) * TICKS_PER_DAY));
-    }
-
-    /// <summary>
-    /// Initialize the Julian date object.
-    /// </summary>
-    /// <param name="year">The year, including the century.</param>
-    /// <param name="doy">Day of year (1 means January 1, etc.)</param>
-    /// <remarks>
-    /// The first day of the year, Jan 1, is day 1.0. Noon on Jan 1 is 
-    /// represented by the day value of 1.5, etc.
-    /// </remarks>
-    private void Initialize(int year, double doy)
     {
         // Arbitrary years used for error checking
         if (year is < 1900 or > 2100)
@@ -124,7 +125,7 @@ internal sealed class Julian
                        (int)(30.6001 * 14) +
                        1720994.5 + B;
 
-        Date = jan01 + doy;
+        Value = jan01 + doy;
     }
 
     /// <summary>
@@ -143,7 +144,7 @@ internal sealed class Julian
         //    Orbital Coordinate Systems, Part III, Dr. T.S. Kelso, 
         //       Satellite Times, Nov/Dec 1995
 
-        double UT = (Date + 0.5) % 1.0;
+        double UT = (Value + 0.5) % 1.0;
         double TU = (FromJan1_12h_2000() - UT) / 36525.0;
 
         double GMST = 24110.54841 + (TU *
@@ -179,7 +180,7 @@ internal sealed class Julian
     /// <returns>A DateTime object in UTC.</returns>
     public DateTime ToTime()
     {
-        double d2 = Date + 0.5;
+        double d2 = Value + 0.5;
         int Z = (int)d2;
         int alpha = (int)((Z - 1867216.25) / 36524.25);
         int A = Z + 1 + alpha - (alpha / 4);
@@ -197,7 +198,7 @@ internal sealed class Julian
         int year = (month >= 3) ? (C - 4716) : (C - 4715);
 
         Julian jdJan01 = new(year, 1.0);
-        double doy = Date - jdJan01.Date; // zero-relative
+        double doy = Value - jdJan01.Value; // zero-relative
 
         DateTime dtJan01 = new(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

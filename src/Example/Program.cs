@@ -1,17 +1,37 @@
 ﻿using System.Astronomy;
 
-var a1 = "OSCAR 7 (AO-7)";
-var a2 = "1 07530U 74089B   13001.41953037  .00000001  00000-0  27778-3 0  5711";
-var a3 = "2 07530 101.4185 357.0759 0011588 254.1624 275.4154 12.53593399744888";
+var a1 = @"OSCAR 7 (AO-7)
+1 07530U 74089B   13001.41953037  .00000001  00000-0  27778-3 0  5711
+2 07530 101.4185 357.0759 0011588 254.1624 275.4154 12.53593399744888";
 
-var tlex = TwoLineElement<double>.Parse(a1, a2, a3);
+//var a1 = "STARLINK-31155";
+//var a2 = "1 58728U 24005A   24036.91667824  .00091608  00000+0  36484-2 0  9999";
+//var a3 = "2 58728  43.0002  49.7284 0001969 257.5625   0.2160 15.24223380  5747";
+
+var s2763 = @"STARLINK-2763
+1 48670U 21044AJ  24036.44046090  .00001946  00000+0  14948-3 0  9996
+2 48670  53.0543 297.9783 0001510  99.0250 261.0910 15.06413955148803";
+
+/*
+STARLINK-31155          
+1 58728U 24005A   24036.91667824  .00091608  00000+0  36484-2 0  9999
+2 58728  43.0002  49.7284 0001969 257.5625   0.2160 15.24223380  5747
+ */
+
+var tlex = TwoLineElement<double>.Parse(a1);
 
 var sgp = new SGP4(tlex, Earth.WGS84);
 
-var now = DateTime.UtcNow;
+var now = new DateTime(2024, 2, 6, 20, 54, 45, DateTimeKind.Utc);
+const double deg2rad = Math.PI / 180.0;
+var observer = new LatLongAlt<double>(35.764472 * deg2rad, 50.786492 * deg2rad, 1185.9);
 
 var rv = sgp.GetPosition(now);
-
+var ecf = rv.Position.ToEcf(now);
+var tp = Earth.WGS84.Topocentric(observer, ecf);
+var la = tp.ToLookAngle();
+var el = la.Elevation * 180 / Math.PI;
+var az = la.Azimuth * 180 / Math.PI;
 
 string str1 = "SGP4 Test";
 string str2 = "1 88888U          80275.98708465  .00073094  13844-3  66816-4 0     8";
@@ -47,7 +67,7 @@ Console.WriteLine("\nExample output:");
 // surface of the earth. Here we arbitrarily select a point on the
 // equator.
 // 0.00 N, 100.00 W, 0 km altitude
-var observer = new Geodetic<double>(0.0, -100.0 / 180.0 * Math.PI, 0);
+
 var eci = sgp.GetPosition(now);
 
 var zone = CalculZoneVisibilite(51, 35, eci.Position);
@@ -127,9 +147,9 @@ void PrintPosVel(IKeplerianElements<double> tle)
     }
 }
 
-Geodetic<double>[] CalculZoneVisibilite(double longitude, double latitude, EarthCenteredInertial<double> position)
+LatLongAlt<double>[] CalculZoneVisibilite(double longitude, double latitude, EarthCenteredInertial<double> position)
 {
-    var _zone = new Geodetic<double>[361];
+    var _zone = new LatLongAlt<double>[361];
 
     double num = longitude;
     if (num > 0.0)
@@ -158,7 +178,7 @@ Geodetic<double>[] CalculZoneVisibilite(double longitude, double latitude, Earth
         var finalLng = (Math.PI - lng) % twoPi;
         var finalLat = (Math.PI / 2.0 - lat);
 
-        var z = new Geodetic<double>(finalLat, finalLng, 0);
+        var z = new LatLongAlt<double>(finalLat, finalLng, 0);
 
         _zone[i] = z;
 
@@ -168,7 +188,7 @@ Geodetic<double>[] CalculZoneVisibilite(double longitude, double latitude, Earth
 
     while (i <= 359);
 
-    _zone[360] = new Geodetic<double>(_zone[0].Latitude, _zone[0].Longitude, _zone[0].Altitude);
+    _zone[360] = new LatLongAlt<double>(_zone[0].Latitude, _zone[0].Longitude, _zone[0].Altitude);
 
     return _zone;
 }
