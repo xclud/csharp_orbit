@@ -2,7 +2,7 @@
 
 namespace System.Astronomy;
 
-public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanMotion, T meanAnomaly, T drag) : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed class KeplerianElements<T>(T epoch, T eccentricity, Angle<T> inclination, Angle<T> rightAscensionOfAscendingNode, Angle<T> argumentOfPeriapsis, T meanMotion, Angle<T> meanAnomaly, T drag) : IKeplerianElements<T> where T : INumber<T>, IFloatingPoint<T>
 {
     public readonly T Epoch = epoch;
 
@@ -30,7 +30,7 @@ public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination,
     /// <para>Orbits with inclination near 90 degrees are called polar (because the satellite crosses over the north and south poles).</para>
     /// <para>The intersection of the equatorial plane and the orbital plane is a line which is called the line of nodes.</para>
     /// </summary>
-    public readonly T Inclination = inclination;
+    public readonly Angle<T> Inclination = inclination;
 
     /// <summary>
     /// Right Ascension of the Ascending Node (RAAN) In Degrees.
@@ -42,7 +42,7 @@ public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination,
     /// <para>I used the term “vernal equinox” above without really defining it.If you can tolerate a minor digression, I’ll do that now. Teachers have told children for years that the vernal equinox is “the place in the sky where the sun rises on the first day of Spring”. This is a horrible definition.Most teachers, and students, have no idea what the first day of spring is (except a date on a calendar), and no idea why the sun should be in the same place in the sky on that date every year.</para>
     /// <para>You now have enough astronomy vocabulary to get a better definition. Consider the orbit of the sun around the earth. I know in school they told you the earth orbits around the sun, but the math is equally valid either way, and it suits our needs at this instant to think of the sun orbiting the earth. The orbit of the sun has an inclination of about 23.5 degrees. (Astronomers don’t usually call this 23.5 degree angle an ‘inclination’, by the way.They use an infinitely more obscure name: The Obliquity of The Ecliptic.) The orbit of the sun is divided (by humans) into four equally sized portions called seasons.The one called Spring begins when the sun pops up past the equator. In other words, the first day of Spring is the day that the sun crosses through the equatorial plane going from South to North.We have a name for that! It’s the ascending node of the Sun’s orbit. So finally, the vernal equinox is nothing more than the ascending node of the Sun’s orbit. The Sun’s orbit has RAAN = 0 simply because we’ve defined the Sun’s ascending node as the place from which all ascending nodes are measured.The RAAN of your satellite’s orbit is just the angle (measured at the center of the earth) between the place the Sun’s orbit pops up past the equator, and the place your satellite’s orbit pops up past the equator.</para>
     /// </summary>
-    public readonly T RightAscensionOfAscendingNode = rightAscensionOfAscendingNode;
+    public readonly Angle<T> RightAscensionOfAscendingNode = rightAscensionOfAscendingNode;
 
 
     /// <summary>
@@ -54,7 +54,7 @@ public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination,
     /// <para>Example: When ARGP = 0, the perigee occurs at the same place as the ascending node.That means that the satellite would be closest to earth just as it rises up over the equator. When ARGP = 180 degrees, apogee would occur at the same place as the ascending node.That means that the satellite would be farthest from earth just as it rises up over the equator.</para>
     /// <para>By convention, ARGP is an angle between 0 and 360 degrees.</para>
     /// </summary>
-    public readonly T ArgumentOfPeriapsis = argumentOfPeriapsis;
+    public readonly Angle<T> ArgumentOfPeriapsis = argumentOfPeriapsis;
 
     public readonly T MeanMotion = meanMotion;
 
@@ -66,7 +66,7 @@ public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination,
     /// It has become common practice with radio amateur satellites to use Mean Anomaly to schedule satellite operations.Satellites commonly change modes or turn on or off at specific places in their orbits, specified by Mean Anomaly. Unfortunately, when used this way, it is common to specify MA in units of 256ths of a circle instead of degrees! Some tracking programs use the term “phase” when they display MA in these units. It is still specified in degrees, between 0 and 360, when entered as an orbital element.
     /// Example: Suppose Oscar-99 has a period of 12 hours, and is turned off from Phase 240 to 16. That means it’s off for 32 ticks of phase.There are 256 of these ticks in the entire 12 hour orbit, so it’s off for (32/256)x12hrs = 1.5 hours. Note that the off time is centered on perigee. Satellites in highly eccentric orbits are often turned off near perigee when they’re moving the fastest, and therefore difficult to use.
     /// </summary>
-    public readonly T MeanAnomaly = meanAnomaly;
+    public readonly Angle<T> MeanAnomaly = meanAnomaly;
 
     public readonly T Drag = drag;
 
@@ -76,13 +76,13 @@ public sealed class KeplerianElements<T>(T epoch, T eccentricity, T inclination,
 
     T IKeplerianElements<T>.MeanMotion => MeanMotion;
 
-    T IKeplerianElements<T>.Inclination => Inclination;
+    Angle<T> IKeplerianElements<T>.Inclination => Inclination;
 
-    T IKeplerianElements<T>.RightAscensionOfAscendingNode => RightAscensionOfAscendingNode;
+    Angle<T> IKeplerianElements<T>.RightAscensionOfAscendingNode => RightAscensionOfAscendingNode;
 
-    T IKeplerianElements<T>.MeanAnomaly => MeanAnomaly;
+    Angle<T> IKeplerianElements<T>.MeanAnomaly => MeanAnomaly;
 
-    T IKeplerianElements<T>.ArgumentOfPeriapsis => ArgumentOfPeriapsis;
+    Angle<T> IKeplerianElements<T>.ArgumentOfPeriapsis => ArgumentOfPeriapsis;
 
     T IKeplerianElements<T>.Drag => Drag;
 }

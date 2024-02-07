@@ -1367,7 +1367,7 @@ public static class Sun
         var elevation = spa.E0;
         var azimuth = spa.Azimuth;
 
-        return new LookAngle<double>(azimuth, elevation, 0, 0);
+        return new LookAngle<double>(Angle<double>.FromDegrees(azimuth), Angle<double>.FromDegrees(elevation), 0, 0);
     }
 }
 

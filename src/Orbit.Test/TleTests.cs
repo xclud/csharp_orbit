@@ -14,11 +14,11 @@ public class TleTests
         var ke = tle.KeplerianElements;
 
         Assert.AreEqual(ke.Epoch, 80275.98708465m);
-        Assert.AreEqual(ke.Inclination, 72.8435m);
+        Assert.AreEqual(ke.Inclination.Degrees, 72.8435m);
         Assert.AreEqual(ke.Eccentricity, 0.0086731m);
-        Assert.AreEqual(ke.RightAscensionOfAscendingNode, 115.9689m);
-        Assert.AreEqual(ke.ArgumentOfPeriapsis, 52.6988m);
-        Assert.AreEqual(ke.MeanAnomaly, 110.5714m);
+        Assert.AreEqual(ke.RightAscensionOfAscendingNode.Degrees, 115.9689m);
+        Assert.AreEqual(ke.ArgumentOfPeriapsis.Degrees, 52.6988m);
+        Assert.AreEqual(ke.MeanAnomaly.Degrees, 110.5714m);
         Assert.AreEqual(ke.MeanMotion, 16.05824518m);
         Assert.AreEqual(ke.Drag, 0.000066816m);
     }
@@ -35,7 +35,7 @@ public class TleTests
 
         Assert.AreEqual(ke.Epoch, 13001.82735048m);
         Assert.AreEqual(ke.Drag, 0.00051624m);
-        Assert.AreEqual(ke.Inclination, 98.6242m);
+        Assert.AreEqual(ke.Inclination.Degrees, 98.6242m);
     }
 
     [TestMethod]
@@ -49,7 +49,7 @@ public class TleTests
         var tle = TwoLineElement<decimal>.Parse(str1, str2, str3);
         var ke = tle.KeplerianElements;
 
-        Assert.AreEqual(ke.MeanAnomaly, 188.6125m);
+        Assert.AreEqual(ke.MeanAnomaly.Degrees, 188.6125m);
 
     }
 

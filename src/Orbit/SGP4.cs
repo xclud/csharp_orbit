@@ -20,10 +20,10 @@ public sealed class SGP4 : ICartesianElements
         this.no = keplerianElements.MeanMotion / xpdotp;
         this.bstar = keplerianElements.Drag;
 
-        this.inclo = keplerianElements.Inclination * deg2rad;
-        this.nodeo = keplerianElements.RightAscensionOfAscendingNode * deg2rad;
-        this.argpo = keplerianElements.ArgumentOfPeriapsis * deg2rad;
-        this.mo = keplerianElements.MeanAnomaly * deg2rad;
+        this.inclo = keplerianElements.Inclination.Degrees * deg2rad;
+        this.nodeo = keplerianElements.RightAscensionOfAscendingNode.Degrees * deg2rad;
+        this.argpo = keplerianElements.ArgumentOfPeriapsis.Degrees * deg2rad;
+        this.mo = keplerianElements.MeanAnomaly.Degrees * deg2rad;
         this.ecco = keplerianElements.Eccentricity;
 
         var year = (int)(keplerianElements.Epoch / 1000.0);

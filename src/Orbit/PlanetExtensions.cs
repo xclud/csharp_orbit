@@ -17,6 +17,14 @@ public static class PlanetExtensions
         return 60.0 / Math.Sqrt(earthRadius * earthRadius * earthRadius / mu);
     }
 
+    internal static double ke(this IPlanet p)
+    {
+        var earthRadius = p.Radius;
+        var ge = p.Mu;
+
+        return 60.0 * Math.Sqrt(ge / earthRadius * earthRadius * earthRadius);
+    }
+
     public static Topocentric<double> Topocentric(this IPlanet planet, LatLongAlt<double> observer, EarthCenteredEarthFixed<double> satellite)
     {
         // http://www.celestrak.com/columns/v02n02/
@@ -24,8 +32,8 @@ public static class PlanetExtensions
         // and he uses ECI.
 
 
-        var longitude = observer.Longitude;
-        var latitude = observer.Latitude;
+        var longitude = observer.Longitude.Radians;
+        var latitude = observer.Latitude.Radians;
 
 
         var observerEcf = observer.ToEcf(planet);

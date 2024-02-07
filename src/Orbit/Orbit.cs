@@ -78,12 +78,12 @@ public sealed class Orbit
         EpochJ = new Julian(year, doy);
 
 
-        m_Inclination = GetRad(this.KeplerianElements.Inclination);
+        m_Inclination = this.KeplerianElements.Inclination.Radians;
         m_Eccentricity = this.KeplerianElements.Eccentricity;
-        m_RAAN = GetRad(this.KeplerianElements.RightAscensionOfAscendingNode);
-        m_ArgPerigee = GetRad(this.KeplerianElements.ArgumentOfPeriapsis);
+        m_RAAN = this.KeplerianElements.RightAscensionOfAscendingNode.Radians;
+        m_ArgPerigee = this.KeplerianElements.ArgumentOfPeriapsis.Radians;
         m_BStar = this.KeplerianElements.Drag;
-        m_MeanAnomaly = GetRad(this.KeplerianElements.MeanAnomaly);
+        m_MeanAnomaly = this.KeplerianElements.MeanAnomaly.Radians;
 
         // Recover the original mean motion and semi-major axis from the
         // input elements.
@@ -180,14 +180,4 @@ public sealed class Orbit
     {
         return utc - Epoch;
     }
-
-    #region Utility
-
-    // ///////////////////////////////////////////////////////////////////
-    private static double GetRad(double v)
-    {
-        return Globals.ToRadians(v);
-    }
-
-    #endregion
 }

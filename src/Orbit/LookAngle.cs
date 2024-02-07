@@ -13,17 +13,17 @@ namespace System.Astronomy;
 /// <param name="range">Range, in kilometers.</param>
 /// <param name="rate">Range rate, in kilometers per second. A negative
 /// range rate means "towards the observer".</param>
-public sealed class LookAngle<T>(T azimuth, T elevation, T range, T rate) where T : INumber<T>, IFloatingPoint<T>
+public sealed class LookAngle<T>(Angle<T> azimuth, Angle<T> elevation, T range, T rate) where T : INumber<T>, IFloatingPoint<T>
 {
     /// <summary>
     /// The azimuth, in radians.
     /// </summary>
-    public readonly T Azimuth = azimuth;
+    public readonly Angle<T> Azimuth = azimuth;
 
     /// <summary>
     /// The elevation, in radians.
     /// </summary>
-    public readonly T Elevation = elevation;
+    public readonly Angle<T> Elevation = elevation;
 
     /// <summary>
     /// The range, in kilometers.

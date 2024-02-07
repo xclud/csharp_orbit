@@ -50,18 +50,18 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
     T IKeplerianElements<T>.MeanMotion => KeplerianElements.MeanMotion;
 
-    T IKeplerianElements<T>.Inclination => KeplerianElements.Inclination;
+    Angle<T> IKeplerianElements<T>.Inclination => KeplerianElements.Inclination;
 
-    T IKeplerianElements<T>.RightAscensionOfAscendingNode => KeplerianElements.RightAscensionOfAscendingNode;
+    Angle<T> IKeplerianElements<T>.RightAscensionOfAscendingNode => KeplerianElements.RightAscensionOfAscendingNode;
 
-    T IKeplerianElements<T>.MeanAnomaly => KeplerianElements.MeanAnomaly;
+    Angle<T> IKeplerianElements<T>.MeanAnomaly => KeplerianElements.MeanAnomaly;
 
-    T IKeplerianElements<T>.ArgumentOfPeriapsis => KeplerianElements.ArgumentOfPeriapsis;
+    Angle<T> IKeplerianElements<T>.ArgumentOfPeriapsis => KeplerianElements.ArgumentOfPeriapsis;
 
     T IKeplerianElements<T>.Drag => KeplerianElements.Drag;
 
 
-    public TwoLineElement(string name, string classification, string noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T drag, T setNumber, T eccentricity, T inclination, T rightAscensionOfAscendingNode, T argumentOfPeriapsis, T meanAnomaly, T meanMotion, int revolutionNumberAtEpoch)
+    public TwoLineElement(string name, string classification, string noradNumber, SatelliteCatalogNumber internationalDesignator, T epoch, T meanMotionFirstDerivation, T meanMotionSecondDerivation, T drag, T setNumber, T eccentricity, Angle<T> inclination, Angle<T> rightAscensionOfAscendingNode, Angle<T> argumentOfPeriapsis, Angle<T> meanAnomaly, T meanMotion, int revolutionNumberAtEpoch)
     {
         Name = name;
         Id = noradNumber;
@@ -157,7 +157,7 @@ public sealed class TwoLineElement<T> : IKeplerianElements<T> where T : INumber<
 
         var RevAtEpoch = string.IsNullOrEmpty(revAtEpoch) ? 0 : int.Parse(revAtEpoch, null);
 
-        return new TwoLineElement<T>(name, classification, noradNumber, intl, epoch, MeanMotionDt, MeanMotionDt2, BStarDrag, SetNumber, Eccentricity, Inclination, Raan, ArgPerigee, MeanAnomaly, MeanMotion, RevAtEpoch);
+        return new TwoLineElement<T>(name, classification, noradNumber, intl, epoch, MeanMotionDt, MeanMotionDt2, BStarDrag, SetNumber, Eccentricity, Angle<T>.FromDegrees(Inclination), Angle<T>.FromDegrees(Raan), Angle<T>.FromDegrees(ArgPerigee), Angle<T>.FromDegrees(MeanAnomaly), MeanMotion, RevAtEpoch);
     }
 
     private static T ParseDecimal(string str, int start, int length)

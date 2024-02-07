@@ -2,7 +2,7 @@
 
 namespace System.Astronomy;
 
-public sealed record Angle<T> where T : INumber<T>, IFloatingPoint<T>
+public sealed record class Angle<T> where T : INumber<T>, IFloatingPoint<T>
 {
     public readonly T Degrees;
     public readonly T Radians;
@@ -23,5 +23,10 @@ public sealed record Angle<T> where T : INumber<T>, IFloatingPoint<T>
     public static Angle<T> FromRadians(T radians)
     {
         return new Angle<T>(radians * _180 / T.Pi, radians);
+    }
+
+    public override string ToString()
+    {
+        return $"{Degrees}° ({Radians} rad)";
     }
 }

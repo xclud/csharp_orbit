@@ -6,7 +6,6 @@ internal static class Globals
 
     public const double Pi = 3.141592653589793;
     public const double TwoPi = 2.0 * Pi;
-    public const double RadsPerDegree = Pi / 180.0;
     public const double DegreesPerRad = 180.0 / Pi;
 
     public const double Gm = 398601.2;   // Earth gravitational constant, km^3/sec^2
@@ -54,18 +53,6 @@ internal static class Globals
     {
         double ret = cosx == 0.0 ? sinx > 0.0 ? Pi / 2.0 : 3.0 * Pi / 2.0 : cosx > 0.0 ? Math.Atan(sinx / cosx) : Pi + Math.Atan(sinx / cosx);
         return ret;
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////
-    public static double ToDegrees(double radians)
-    {
-        return radians * DegreesPerRad;
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////
-    public static double ToRadians(double degrees)
-    {
-        return degrees * RadsPerDegree;
     }
 
     #endregion

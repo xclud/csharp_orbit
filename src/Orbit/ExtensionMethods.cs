@@ -128,8 +128,8 @@ public static class ExtensionMethods
 
     public static EarthCenteredEarthFixed<double> ToEcf(this LatLongAlt<double> geodetic, IPlanet planet)
     {
-        var longitude = geodetic.Longitude;
-        var latitude = geodetic.Latitude;
+        var longitude = geodetic.Longitude.Radians;
+        var latitude = geodetic.Latitude.Radians;
         var height = geodetic.Altitude;
 
         var a = planet.Radius;
@@ -176,7 +176,7 @@ public static class ExtensionMethods
         }
 
         var height = (R / Math.Cos(latitude)) - (a * C);
-        return new LatLongAlt<double>(latitude: latitude, longitude: longitude, altitude: height);
+        return new LatLongAlt<double>(latitude: Angle<double>.FromRadians(latitude), longitude: Angle<double>.FromRadians(longitude), altitude: height);
     }
 
     public static LatLongAlt<double> ToGeodetic(this EarthCenteredInertial<double> eci, IPlanet planet, DateTime utc)
@@ -198,7 +198,7 @@ public static class ExtensionMethods
         var elevation = Math.Asin(topZ / range);
         var azimuth = Math.Atan2(-topE, topS) + Math.PI;
 
-        return new LookAngle<double>(azimuth: azimuth, elevation: elevation, range: range, rate: 0);
+        return new LookAngle<double>(azimuth: Angle<double>.FromRadians(azimuth), elevation: Angle<double>.FromRadians(elevation), range: range, rate: 0);
     }
 
     public static double Length(this EarthCenteredInertial<double> v)

@@ -12,17 +12,17 @@ namespace System.Astronomy;
 /// <param name="longitude">Longitude, in radians. Negative value indicate longitude
 /// west.</param>
 /// <param name="altitude">Altitude above the ellipsoid model, in kilometers.</param>
-public sealed class LatLongAlt<T>(T latitude, T longitude, T altitude) where T : INumber<T>, IFloatingPoint<T>
+public sealed class LatLongAlt<T>(Angle<T> latitude, Angle<T> longitude, T altitude) where T : INumber<T>, IFloatingPoint<T>
 {
     /// <summary>
     /// Latitude, in radians. A negative value indicates latitude south.
     /// </summary>
-    public readonly T Latitude = latitude;
+    public readonly Angle<T> Latitude = latitude;
 
     /// <summary>
     /// Longitude, in radians. A negative value indicates longitude west.
     /// </summary>
-    public readonly T Longitude = longitude;
+    public readonly Angle<T> Longitude = longitude;
 
     /// <summary>
     /// Altitude, in kilometers, above the ellipsoid model.
@@ -36,8 +36,8 @@ public sealed class LatLongAlt<T>(T latitude, T longitude, T altitude) where T :
     /// <returns>The formatted string.</returns>
     public override string ToString()
     {
-        bool latNorth = Latitude >= T.Zero;
-        bool lonEast = Longitude >= T.Zero;
+        bool latNorth = Latitude.Degrees >= T.Zero;
+        bool lonEast = Longitude.Degrees >= T.Zero;
 
         var lat = 180.0 / Math.PI * double.Parse(Latitude.ToString() ?? "0");
         var lng = 180.0 / Math.PI * double.Parse(Longitude.ToString() ?? "0");
