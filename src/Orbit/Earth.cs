@@ -17,11 +17,11 @@ public static class Earth
 
     private sealed class _WGS84 : IPlanet
     {
-        public double Radius => 6378.136658;
+        public double Radius => 6378.137; //6378.136658;
         public double Mu => 398600.4418; // 398600.4415
         public double J2 => 0.00108262998905;
         public double J3 => -0.00000253215306;
         public double J4 => -0.00000161098761;
-        public double Flattening => 1 / 298.257223563;
+        public double Flattening => 0.0033528106718309306;
     }
 }

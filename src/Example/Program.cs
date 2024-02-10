@@ -24,7 +24,7 @@ var sgp = new SGP4(tlex, Earth.WGS84);
 
 //var now = new DateTime(2024, 2, 6, 20, 54, 45, DateTimeKind.Utc);
 var now = new DateTime(2024, 2, 7, 10, 3, 0, DateTimeKind.Utc);
-var observer = new LatLongAlt<double>(Angle<double>.FromDegrees(35.764472), Angle<double>.FromDegrees(50.786492), 1185.9);
+var observer = new LatLongAlt<double>(Angle<double>.FromDegrees(35.764472), Angle<double>.FromDegrees(50.786492), 1.1859);
 
 var rv = sgp.GetPosition(now);
 var ecf = rv.Position.ToEcf(now);

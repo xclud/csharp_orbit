@@ -27,16 +27,19 @@ internal static class SPACalculator
         // valid range: -8000 to 8000 seconds, error code: 7
 
         public required double Timezone; // Observer time zone (negative west of Greenwich)
-        // valid range: -18   to   18 hours,   error code: 8
+                                         // valid range: -18   to   18 hours,   error code: 8
 
-        public required double Longitude; // Observer longitude (negative west of Greenwich)
-        // valid range: -180  to  180 degrees, error code: 9
+        //public required Angle<double> Longitude; // Observer longitude (negative west of Greenwich)
+        //// valid range: -180  to  180 degrees, error code: 9
 
-        public required double Latitude; // Observer latitude (negative south of equator)
-        // valid range: -90   to   90 degrees, error code: 10
+        //public required Angle<double> Latitude; // Observer latitude (negative south of equator)
+        //// valid range: -90   to   90 degrees, error code: 10
 
-        public required double Elevation; // Observer elevation [meters]
-        // valid range: -6500000 or higher meters,    error code: 11
+        //public required double Elevation; // Observer elevation [meters]
+        //// valid range: -6500000 or higher meters,    error code: 11
+
+        public required LatLongAlt<double> Observer;
+
 
         public required double Pressure; // Annual average local pressure [millibars]
         // valid range:    0 to 5000 millibars,       error code: 12
@@ -47,7 +50,7 @@ internal static class SPACalculator
         public required double Slope; // Surface slope (measured from the horizontal plane)
         // valid range: -360 to 360 degrees, error code: 14
 
-        public required double AzmRotation; // Surface azimuth rotation (measured from south to projection of
+        public required Angle<double> AzmRotation; // Surface azimuth rotation (measured from south to projection of
         //     surface normal on horizontal plane, negative east)
         // valid range: -360 to 360 degrees, error code: 15
 
@@ -93,10 +96,10 @@ internal static class SPACalculator
 
         public double H; //observer hour angle [degrees]
         public double Xi; //sun equatorial horizontal parallax [degrees]
-        public double DelAlpha; //sun right ascension parallax [degrees]
-        public double DeltaPrime; //topocentric sun declination [degrees]
+        public Angle<double> DelAlpha; //sun right ascension parallax [degrees]
+        public Angle<double> DeltaPrime; //topocentric sun declination [degrees]
         public double AlphaPrime; //topocentric sun right ascension [degrees]
-        public double HPrime; //topocentric local hour angle [degrees]
+        public Angle<double> HPrime; //topocentric local hour angle [degrees]
 
         public double E0; //topocentric elevation angle (uncorrected) [degrees]
         public double DelE; //atmospheric refraction correction [degrees]
@@ -110,12 +113,12 @@ internal static class SPACalculator
         //---------------------Final OUTPUT VALUES------------------------
 
         public double Zenith; //topocentric zenith angle [degrees]
-        public double AzimuthAstro; //topocentric azimuth angle (westward from south) [for astronomers]
+        public Angle<double> AzimuthAstro; //topocentric azimuth angle (westward from south) [for astronomers]
 
-        public double Azimuth;
+        public Angle<double> Azimuth;
         //topocentric azimuth angle (eastward from north) [for navigators and solar radiation]
 
-        public double Incidence; //surface incidence angle [degrees]
+        public Angle<double> Incidence; //surface incidence angle [degrees]
 
         public double Suntransit; //local sun transit time (or solar noon) [fractional hour]
         public double Sunrise; //local sunrise time (+/- 30 seconds) [fractional hour]
@@ -589,6 +592,18 @@ internal static class SPACalculator
 
         return limited;
     }
+    static Angle<double> LimitDegrees(Angle<double> v)
+    {
+        var degrees = v.Degrees;
+        degrees /= 360.0;
+        var limited = 360.0 * (degrees - Math.Floor(degrees));
+        if (limited < 0)
+        {
+            limited += 360.0;
+        }
+
+        return Angle<double>.FromDegrees(limited);
+    }
 
     static double LimitDegrees180pm(double degrees)
     {
@@ -722,12 +737,12 @@ internal static class SPACalculator
             return 8;
         }
 
-        if (Math.Abs(spa.Longitude) > 180)
+        if (Math.Abs(spa.Observer.Longitude.Degrees) > 180)
         {
             return 9;
         }
 
-        if (Math.Abs(spa.Latitude) > 90)
+        if (Math.Abs(spa.Observer.Latitude.Degrees) > 90)
         {
             return 10;
         }
@@ -737,7 +752,7 @@ internal static class SPACalculator
             return 16;
         }
 
-        if (spa.Elevation < -6500000)
+        if (spa.Observer.Altitude < -6500000)
         {
             return 11;
         }
@@ -749,7 +764,7 @@ internal static class SPACalculator
                 return 14;
             }
 
-            if (Math.Abs(spa.AzmRotation) > 360)
+            if (Math.Abs(spa.AzmRotation.Degrees) > 360)
             {
                 return 15;
             }
@@ -998,9 +1013,9 @@ internal static class SPACalculator
                                  Math.Cos(betaRad) * Math.Sin(epsilonRad) * Math.Sin(DegToRad(lamda))));
     }
 
-    static double ObserverHourAngle(double nu, double longitude, double alphaDeg)
+    static double ObserverHourAngle(double nu, Angle<double> longitude, double alphaDeg)
     {
-        return LimitDegrees(nu + longitude - alphaDeg);
+        return LimitDegrees(nu + longitude.Degrees - alphaDeg);
     }
 
     static double SunEquatorialHorizontalParallax(double r)
@@ -1008,10 +1023,10 @@ internal static class SPACalculator
         return 8.794 / (3600.0 * r);
     }
 
-    static void RightAscensionParallaxAndTopocentricDec(double latitude, double elevation,
-        double xi, double h, double delta, ref double deltaAlpha, ref double deltaPrime)
+    static void RightAscensionParallaxAndTopocentricDec(Angle<double> latitude, double elevation,
+        double xi, double h, double delta, out Angle<double> deltaAlpha, out Angle<double> deltaPrime)
     {
-        double latRad = DegToRad(latitude);
+        double latRad = latitude.Radians;
         double xiRad = DegToRad(xi);
         double hRad = DegToRad(h);
         double deltaRad = DegToRad(delta);
@@ -1022,29 +1037,29 @@ internal static class SPACalculator
         var deltaAlphaRad = Math.Atan2(-x * Math.Sin(xiRad) * Math.Sin(hRad),
             Math.Cos(deltaRad) - x * Math.Sin(xiRad) * Math.Cos(hRad));
 
-        deltaPrime = RadToDeg(Math.Atan2((Math.Sin(deltaRad) - y * Math.Sin(xiRad)) * Math.Cos(deltaAlphaRad),
+        deltaPrime = Angle<double>.FromRadians(Math.Atan2((Math.Sin(deltaRad) - y * Math.Sin(xiRad)) * Math.Cos(deltaAlphaRad),
             Math.Cos(deltaRad) - x * Math.Sin(xiRad) * Math.Cos(hRad)));
 
-        deltaAlpha = RadToDeg(deltaAlphaRad);
+        deltaAlpha = Angle<double>.FromRadians(deltaAlphaRad);
     }
 
-    static double TopocentricRightAscension(double alphaDeg, double deltaAlpha)
+    static double TopocentricRightAscension(double alphaDeg, Angle<double> deltaAlpha)
     {
-        return alphaDeg + deltaAlpha;
+        return alphaDeg + deltaAlpha.Degrees;
     }
 
-    static double TopocentricLocalHourAngle(double h, double deltaAlpha)
+    static Angle<double> TopocentricLocalHourAngle(double h, Angle<double> deltaAlpha)
     {
-        return h - deltaAlpha;
+        return Angle<double>.FromDegrees(h - deltaAlpha.Degrees);
     }
 
-    static double TopocentricElevationAngle(double latitude, double deltaPrime, double hPrime)
+    static double TopocentricElevationAngle(Angle<double> latitude, Angle<double> deltaPrime, Angle<double> hPrime)
     {
-        double latRad = DegToRad(latitude);
-        double deltaPrimeRad = DegToRad(deltaPrime);
+        double latRad = latitude.Radians;
+        double deltaPrimeRad = deltaPrime.Radians;
 
         return RadToDeg(Math.Asin(Math.Sin(latRad) * Math.Sin(deltaPrimeRad) +
-                                 Math.Cos(latRad) * Math.Cos(deltaPrimeRad) * Math.Cos(DegToRad(hPrime))));
+                                 Math.Cos(latRad) * Math.Cos(deltaPrimeRad) * Math.Cos(hPrime.Radians)));
     }
 
     static double AtmosphericRefractionCorrection(double pressure, double temperature,
@@ -1071,26 +1086,25 @@ internal static class SPACalculator
         return 90.0 - e;
     }
 
-    static double TopocentricAzimuthAngleAstro(double hPrime, double latitude, double deltaPrime)
+    static Angle<double> TopocentricAzimuthAngleAstro(Angle<double> hPrime, Angle<double> latitude, Angle<double> deltaPrime)
     {
-        double hPrimeRad = DegToRad(hPrime);
-        double latRad = DegToRad(latitude);
+        double hPrimeRad = hPrime.Radians;
+        double latRad = latitude.Radians;
 
-        return LimitDegrees(RadToDeg(Math.Atan2(Math.Sin(hPrimeRad), Math.Cos(hPrimeRad) * Math.Sin(latRad) - Math.Tan(DegToRad(deltaPrime)) * Math.Cos(latRad))));
+        return LimitDegrees(Angle<double>.FromRadians(Math.Atan2(Math.Sin(hPrimeRad), Math.Cos(hPrimeRad) * Math.Sin(latRad) - Math.Tan(deltaPrime.Radians) * Math.Cos(latRad))));
     }
 
-    static double TopocentricAzimuthAngle(double azimuthAstro)
+    static Angle<double> TopocentricAzimuthAngle(Angle<double> azimuthAstro)
     {
-        return LimitDegrees(azimuthAstro + 180.0);
+        return LimitDegrees(Angle<double>.FromDegrees(azimuthAstro.Degrees + 180.0));
     }
 
-    static double SurfaceIncidenceAngle(double zenith, double azimuthAstro, double azmRotation,
-        double slope)
+    static Angle<double> SurfaceIncidenceAngle(double zenith, Angle<double> azimuthAstro, Angle<double> azmRotation, double slope)
     {
         double zenithRad = DegToRad(zenith);
         double slopeRad = DegToRad(slope);
 
-        return RadToDeg(Math.Acos(Math.Cos(zenithRad) * Math.Cos(slopeRad) + Math.Sin(slopeRad) * Math.Sin(zenithRad) * Math.Cos(DegToRad(azimuthAstro - azmRotation))));
+        return Angle<double>.FromRadians(Math.Acos(Math.Cos(zenithRad) * Math.Cos(slopeRad) + Math.Sin(slopeRad) * Math.Sin(zenithRad) * Math.Cos(azimuthAstro.Radians - azmRotation.Radians)));
     }
 
     static double SunMeanLongitude(double jme)
@@ -1103,15 +1117,15 @@ internal static class SPACalculator
         return LimitMinutes(4.0 * (m - 0.0057183 - alpha + delPsi * Math.Cos(DegToRad(epsilon))));
     }
 
-    static double ApproxSunTransitTime(double alphaZero, double longitude, double nu)
+    static double ApproxSunTransitTime(double alphaZero, Angle<double> longitude, double nu)
     {
-        return (alphaZero - longitude - nu) / 360.0;
+        return (alphaZero - longitude.Degrees - nu) / 360.0;
     }
 
-    static double SunHourAngleAtRiseSet(double latitude, double deltaZero, double h0Prime)
+    static double SunHourAngleAtRiseSet(Angle<double> latitude, double deltaZero, double h0Prime)
     {
         double h0 = -99999;
-        double latitudeRad = DegToRad(latitude);
+        double latitudeRad = latitude.Radians;
         double deltaZeroRad = DegToRad(deltaZero);
         double argument = (Math.Sin(DegToRad(h0Prime)) - Math.Sin(latitudeRad) * Math.Sin(deltaZeroRad)) / (Math.Cos(latitudeRad) * Math.Cos(deltaZeroRad));
 
@@ -1242,8 +1256,8 @@ internal static class SPACalculator
             sunRts.Jd++;
         }
 
-        mRts[(int)TERM5.SUN_TRANSIT] = ApproxSunTransitTime(alpha[(int)TERM4.JD_ZERO], spa.Longitude, nu);
-        var h0 = SunHourAngleAtRiseSet(spa.Latitude, delta[(int)TERM4.JD_ZERO], h0Prime);
+        mRts[(int)TERM5.SUN_TRANSIT] = ApproxSunTransitTime(alpha[(int)TERM4.JD_ZERO], spa.Observer.Longitude, nu);
+        var h0 = SunHourAngleAtRiseSet(spa.Observer.Latitude, delta[(int)TERM4.JD_ZERO], h0Prime);
 
         if (h0 >= 0)
         {
@@ -1258,9 +1272,9 @@ internal static class SPACalculator
                 alphaPrime[i] = RtsAlphaDeltaPrime(ref alpha, n);
                 deltaPrime[i] = RtsAlphaDeltaPrime(ref delta, n);
 
-                hPrime[i] = LimitDegrees180pm(nuRts[i] + spa.Longitude - alphaPrime[i]);
+                hPrime[i] = LimitDegrees180pm(nuRts[i] + spa.Observer.Longitude.Degrees - alphaPrime[i]);
 
-                hRts[i] = RtsSunAltitude(spa.Latitude, deltaPrime[i], hPrime[i]);
+                hRts[i] = RtsSunAltitude(spa.Observer.Latitude.Degrees, deltaPrime[i], hPrime[i]);
             }
 
             spa.Srha = hPrime[(int)TERM5.SUN_RISE];
@@ -1272,10 +1286,10 @@ internal static class SPACalculator
                     spa.Timezone);
 
             spa.Sunrise = DayFracToLocalHr(SunRiseAndSet(ref mRts, ref hRts, ref deltaPrime,
-                spa.Latitude, ref hPrime, h0Prime, (int)TERM5.SUN_RISE), spa.Timezone);
+                spa.Observer.Latitude.Degrees, ref hPrime, h0Prime, (int)TERM5.SUN_RISE), spa.Timezone);
 
             spa.Sunset = DayFracToLocalHr(SunRiseAndSet(ref mRts, ref hRts, ref deltaPrime,
-                spa.Latitude, ref hPrime, h0Prime, (int)TERM5.SUN_SET), spa.Timezone);
+                spa.Observer.Latitude.Degrees, ref hPrime, h0Prime, (int)TERM5.SUN_SET), spa.Timezone);
 
         }
         else
@@ -1284,7 +1298,7 @@ internal static class SPACalculator
         }
     }
 
-    public static int SPACalculate(ref SPAData spa)
+    internal static int SPACalculate(ref SPAData spa)
     {
         var result = ValidateInputs(ref spa);
 
@@ -1295,29 +1309,26 @@ internal static class SPACalculator
 
             CalculateGeocentricSunRightAscensionAndDeclination(ref spa);
 
-            spa.H = ObserverHourAngle(spa.Nu, spa.Longitude, spa.Alpha);
+            spa.H = ObserverHourAngle(spa.Nu, spa.Observer.Longitude, spa.Alpha);
             spa.Xi = SunEquatorialHorizontalParallax(spa.R);
 
-            RightAscensionParallaxAndTopocentricDec(spa.Latitude, spa.Elevation, spa.Xi,
-                spa.H, spa.Delta, ref spa.DelAlpha, ref spa.DeltaPrime);
+            RightAscensionParallaxAndTopocentricDec(spa.Observer.Latitude, spa.Observer.Altitude, spa.Xi, spa.H, spa.Delta, out spa.DelAlpha, out spa.DeltaPrime);
 
             spa.AlphaPrime = TopocentricRightAscension(spa.Alpha, spa.DelAlpha);
             spa.HPrime = TopocentricLocalHourAngle(spa.H, spa.DelAlpha);
 
-            spa.E0 = TopocentricElevationAngle(spa.Latitude, spa.DeltaPrime, spa.HPrime);
+            spa.E0 = TopocentricElevationAngle(spa.Observer.Latitude, spa.DeltaPrime, spa.HPrime);
             spa.DelE = AtmosphericRefractionCorrection(spa.Pressure, spa.Temperature,
                 spa.AtmosRefract, spa.E0);
             spa.E = TopocentricElevationAngleCorrected(spa.E0, spa.DelE);
 
             spa.Zenith = TopocentricZenithAngle(spa.E);
-            spa.AzimuthAstro = TopocentricAzimuthAngleAstro(spa.HPrime, spa.Latitude,
-                spa.DeltaPrime);
+            spa.AzimuthAstro = TopocentricAzimuthAngleAstro(spa.HPrime, spa.Observer.Latitude, spa.DeltaPrime);
             spa.Azimuth = TopocentricAzimuthAngle(spa.AzimuthAstro);
 
             if ((spa.Function == CalculationMode.SPA_ZA_INC) || (spa.Function == CalculationMode.SPA_ALL))
             {
-                spa.Incidence = SurfaceIncidenceAngle(spa.Zenith, spa.AzimuthAstro,
-                    spa.AzmRotation, spa.Slope);
+                spa.Incidence = SurfaceIncidenceAngle(spa.Zenith, spa.AzimuthAstro, spa.AzmRotation, spa.Slope);
             }
 
             if ((spa.Function == CalculationMode.SPA_ZA_RTS) || (spa.Function == CalculationMode.SPA_ALL))
@@ -1333,7 +1344,7 @@ internal static class SPACalculator
 
 public static class Sun
 {
-    public static LookAngle<double> GetLookAngle(DateAndTime dateTime, double timezone, double latitude, double longitude, double altitude, double temperature = 25, double pressure = 1000)
+    public static LookAngle<double> GetLookAngle(DateAndTime dateTime, double timezone, LatLongAlt<double> observer, double temperature = 25, double pressure = 1000)
     {
         var spa = new SPACalculator.SPAData
         {
@@ -1347,7 +1358,7 @@ public static class Sun
 
             //
             AtmosRefract = 0.5667,
-            AzmRotation = 0,
+            AzmRotation = Angle<double>.FromDegrees(0),
             DeltaT = 0,
             DeltaUt1 = 0,
 
@@ -1357,9 +1368,7 @@ public static class Sun
             Slope = 0,
             Function = SPACalculator.CalculationMode.SPA_ALL,
 
-            Latitude = latitude,
-            Longitude = longitude,
-            Elevation = altitude,
+            Observer = observer,
         };
 
         SPACalculator.SPACalculate(ref spa);
@@ -1367,7 +1376,7 @@ public static class Sun
         var elevation = spa.E0;
         var azimuth = spa.Azimuth;
 
-        return new LookAngle<double>(Angle<double>.FromDegrees(azimuth), Angle<double>.FromDegrees(elevation), 0, 0);
+        return new LookAngle<double>(azimuth, Angle<double>.FromDegrees(elevation), 0, 0);
     }
 }
 

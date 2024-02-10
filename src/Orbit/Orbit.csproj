@@ -18,8 +18,8 @@
 		<AssemblyVersion></AssemblyVersion>
 		<FileVersion></FileVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>0.0.19</Version>
-		<Copyright>2022 Mahdi K. Fard</Copyright>
+		<Version>0.0.20</Version>
+		<Copyright>2021-2024 Mahdi K. Fard</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 

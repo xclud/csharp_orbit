@@ -359,7 +359,7 @@ public sealed class SGP4 : ICartesianElements
     internal readonly char operationmode;
     internal readonly double ecco;
     internal readonly double no;
-    internal readonly double gsto;
+    internal readonly Angle<double> gsto;
     internal readonly double d2201;
     internal readonly double d2211;
     internal readonly double d3210;
@@ -747,7 +747,7 @@ public sealed class SGP4 : ICartesianElements
             rp = rp,
             rteosq = rteosq,
             sinio = sinio,
-            gsto = gsto,
+            gsto = Angle<double>.FromRadians(gsto),
         };
     }
 
@@ -767,7 +767,7 @@ public sealed class SGP4 : ICartesianElements
         internal double rp;
         internal double rteosq;
         internal double sinio;
-        internal double gsto;
+        internal Angle<double> gsto = default!;
     }
 
     private static double gstime(double jdut1)
@@ -899,7 +899,7 @@ public sealed class SGP4 : ICartesianElements
         var t = tsince;
 
         //  ------- update for secular gravity and atmospheric drag -----
-        var xmdf = satrec.mo + (satrec.mdot * t);
+        var xmdf = (satrec.mo + satrec.mdot * t) % twoPi;
         var argpdf = satrec.argpo + (satrec.argpdot * t);
         var nodedf = satrec.nodeo + (satrec.nodedot * t);
         var argpm = argpdf;
@@ -1211,7 +1211,7 @@ public sealed class SGP4 : ICartesianElements
     *    hoots, schumacher and glover 2004
     *    vallado, crawford, hujsak, kelso  2006
     ----------------------------------------------------------------------------*/
-    private static DsInitResult DsInit(IPlanet planet, double cosim, double argpo, double s1, double s2, double s3, double s4, double s5, double sinim, double ss1, double ss2, double ss3, double ss4, double ss5, double sz1, double sz3, double sz11, double sz13, double sz21, double sz23, double sz31, double sz33, double t, double tc, double gsto, double mo, double mdot, double no, double nodeo, double nodedot, double xpidot, double z1, double z3, double z11, double z13, double z21, double z23, double z31, double z33, double ecco, double eccsq, double emsq, double em, double argpm, double inclm, double mm, double nm, double nodem, int irez, double atime, double d2201, double d2211, double d3210, double d3222, double d4410, double d4422, double d5220, double d5232, double d5421, double d5433, double dedt, double didt, double dmdt, double dnodt, double domdt, double del1, double del2, double del3, double xfact, double xlamo, double xli, double xni)
+    private static DsInitResult DsInit(IPlanet planet, double cosim, double argpo, double s1, double s2, double s3, double s4, double s5, double sinim, double ss1, double ss2, double ss3, double ss4, double ss5, double sz1, double sz3, double sz11, double sz13, double sz21, double sz23, double sz31, double sz33, double t, double tc, Angle<double> gsto, double mo, double mdot, double no, double nodeo, double nodedot, double xpidot, double z1, double z3, double z11, double z13, double z21, double z23, double z31, double z33, double ecco, double eccsq, double emsq, double em, double argpm, double inclm, double mm, double nm, double nodem, int irez, double atime, double d2201, double d2211, double d3210, double d3222, double d4410, double d4422, double d5220, double d5232, double d5421, double d5433, double dedt, double didt, double dmdt, double dnodt, double domdt, double del1, double del2, double del3, double xfact, double xlamo, double xli, double xni)
     {
         var xke = planet.xke();
 
@@ -1278,7 +1278,7 @@ public sealed class SGP4 : ICartesianElements
 
         // ----------- calculate deep space resonance effects --------
         const double dndt = 0.0;
-        var theta = (gsto + (tc * rptim)) % twoPi;
+        var theta = (gsto.Radians + (tc * rptim)) % twoPi;
         em += dedt * t;
         inclm += didt * t;
         argpm += domdt * t;
@@ -1671,7 +1671,7 @@ public sealed class SGP4 : ICartesianElements
         double ft = 0.0;
 
         //  ----------- calculate deep space resonance effects -----------
-        double theta = (gsto + (tc * rptim)) % twoPi;
+        double theta = (gsto.Radians + (tc * rptim)) % twoPi;
         em += dedt * t;
         inclm += didt * t;
         argpm += domdt * t;
